@@ -1,0 +1,19 @@
+<launch>
+
+  <arg name="record_bag" default="0" />
+  <arg name="include_gazebo" default="0" />
+
+  <group if="$(arg include_gazebo)">
+    <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch" />
+  </group>
+
+  <!-- Walker Node -->
+  <node pkg="turtlebot_walker" type="walker" name="walker" output="screen" />
+
+  <!-- rosbag -->
+  <group if="$(arg record_bag)">
+    <node pkg="rosbag" type="record" args="-a -O turtlebot_walker.bag -j -x '/camera.*'"
+      name="rosbag" />
+  </group>
+
+</launch>

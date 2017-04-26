@@ -8,7 +8,7 @@
   </group>
 
   <!-- Walker Node -->
-  <node pkg="turtlebot_walker" type="walker" name="walker" output="screen" />
+  <node pkg="clutter_butter" type="walker" name="walker" output="screen" />
 
   <!-- rosbag -->
   <group if="$(arg record_bag)">

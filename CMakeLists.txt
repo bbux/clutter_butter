@@ -10,6 +10,20 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
+  message_generation
+)
+
+## Declare ROS messages and services
+add_message_files(
+	FILES Target.msg
+)
+
+## Needs to be declared be for catkin_package
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs
+  std_msgs
 )
 
 catkin_package(
@@ -18,11 +32,13 @@ catkin_package(
 #  LIBRARIES
   CATKIN_DEPENDS
   std_msgs
+  message_runtime
 )
 
 ###########
 ## Build ##
 ###########
+
 
 include_directories(
 	include ${catkin_INCLUDE_DIRS} 
@@ -37,10 +53,10 @@ target_link_libraries(
 	walker
 	${catkin_LIBRARIES}
 )
-#add_dependencies(
-#	walker
-#  ${clutter_butter_EXPORTED_TARGETS}
-#)
+add_dependencies(
+	walker
+	${PROJECT_NAME}_generate_messages_cpp
+)
 
 
 if(CATKIN_ENABLE_TESTING)

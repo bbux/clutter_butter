@@ -16,7 +16,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Declare ROS messages and services
 add_message_files(
-	FILES Target.msg
+	FILES
+	Target.msg
+	PushPlan.msg
 )
 
 ## Needs to be declared be for catkin_package

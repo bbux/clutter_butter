@@ -21,6 +21,12 @@ add_message_files(
 	PushPlan.msg
 )
 
+add_service_files(
+	FILES
+	SetMapWalkerState.srv
+	SetPushExecutorState.srv
+)
+
 ## Needs to be declared be for catkin_package
 generate_messages(
   DEPENDENCIES

@@ -25,6 +25,8 @@ add_service_files(
 	FILES
 	SetMapWalkerState.srv
 	SetPushExecutorState.srv
+	NewTarget.srv
+	GetPushPlan.srv
 )
 
 ## Needs to be declared be for catkin_package

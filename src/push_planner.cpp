@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Brian Buxton <bbux10@gmail.com>
- * @brief walker node for roomba like walking and obstacle avoidance
+ * @brief push_planner node for roomba like walking and obstacle avoidance
  * @copyright BSD License
  * Copyright (c) 2017 Brian Buxton
  * All rights reserved.
@@ -29,7 +29,7 @@
  */
 #include <vector>
 #include "ros/ros.h"
-#include "walker.h"
+#include "push_planner.h"
 
 float MINDIST = 0.3;
 float INCREMENT = 0.5;
@@ -77,19 +77,19 @@ geometry_msgs::Twist zero_twist() {
   return vel;
 }
 
-Walker::Walker(ros::NodeHandle nh) {
+PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;
   pub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
 }
 
-Walker::~Walker() {
+PushPlanner::~PushPlanner() {
   // nothing to do
 }
 
 /*********************************************
  * ACTION HAPPENS HERE
  *********************************************/
-void Walker::process_scan(const sensor_msgs::LaserScan::ConstPtr& scan) {
+void PushPlanner::process_scan(const sensor_msgs::LaserScan::ConstPtr& scan) {
   ROS_DEBUG_STREAM("got a new scan message...");
   if (too_close(scan->ranges, MINDIST)) {
     ROS_DEBUG_STREAM("found an obstacle stopping and redirecting...");
@@ -101,21 +101,21 @@ void Walker::process_scan(const sensor_msgs::LaserScan::ConstPtr& scan) {
   }
 }
 
-void Walker::walk() {
+void PushPlanner::walk() {
   ROS_DEBUG_STREAM("starting walk...");
-  ros::Subscriber sub = n.subscribe("scan", 1000, &Walker::process_scan, this);
+  ros::Subscriber sub = n.subscribe("scan", 1000, &PushPlanner::process_scan, this);
   // start in opposite direction, makes demo more interesting
   rotate_n_degrees(180);
   // just sit here and wait, let process_scan do the work
   ros::spin();
 }
 
-void Walker::stop() {
+void PushPlanner::stop() {
   geometry_msgs::Twist vel = zero_twist();
   pub.publish(vel);
 }
 
-void Walker::rotate_n_degrees(int angle) {
+void PushPlanner::rotate_n_degrees(int angle) {
   geometry_msgs::Twist vel = zero_twist();
 
   // arbitrarily picked speed
@@ -134,7 +134,7 @@ void Walker::rotate_n_degrees(int angle) {
   }
 }
 
-void Walker::forward(float increment) {
+void PushPlanner::forward(float increment) {
   ROS_DEBUG_STREAM("moving forward by: " << increment << " for time " << steps);
 
   geometry_msgs::Twist vel = zero_twist();
@@ -154,10 +154,10 @@ void Walker::forward(float increment) {
 }
 
 int main(int argc, char **argv) {
-  // basic initialization, then let walker class do the rest
-  ros::init(argc, argv, "walker");
+  // basic initialization, then let push_planner class do the rest
+  ros::init(argc, argv, "push_planner");
   ros::NodeHandle n;
-  Walker walker(n);
-  walker.walk();
+  PushPlanner push_planner(n);
+  push_planner.walk();
   return 0;
 }

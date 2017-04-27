@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Brian Buxton <bbux10@gmail.com>
- * @brief walker node header definitions
+ * @brief push_planner node header definitions
  * @copyright BSD License
  * Copyright (c) 2017 Brian Buxton
  * All rights reserved.
@@ -37,7 +37,7 @@
 /**
  * Class for doing a random walk with obstacle avoidance
  */
-class Walker {
+class PushPlanner {
  private:
   ros::NodeHandle n;
   // publisher for velocity twist messages
@@ -66,10 +66,10 @@ class Walker {
 
  public:
   /**
-   * Construct and initialize the walker node
+   * Construct and initialize the push_planner node
    * @param nh the valid node handle for this node
    */
-  explicit Walker(ros::NodeHandle nh);
+  explicit PushPlanner(ros::NodeHandle nh);
   /**
    * Starts the node loop to listen for laser scan data and to send updated
    * velocity commands to perform the random walk
@@ -78,7 +78,7 @@ class Walker {
   /**
    * Destructor
    */
-  virtual ~Walker();
+  virtual ~PushPlanner();
 };
 
 #endif  // SRC_WALKER_H_

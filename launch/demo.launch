@@ -8,11 +8,11 @@
   </group>
 
   <!-- Walker Node -->
-  <node pkg="clutter_butter" type="walker" name="walker" output="screen" />
+  <node pkg="clutter_butter" type="push_planner" name="push_planner" output="screen" />
 
   <!-- rosbag -->
   <group if="$(arg record_bag)">
-    <node pkg="rosbag" type="record" args="-a -O turtlebot_walker.bag -j -x '/camera.*'"
+    <node pkg="rosbag" type="record" args="-a -O turtlebot_push_planner.bag -j -x '/camera.*'"
       name="rosbag" />
   </group>
 

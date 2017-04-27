@@ -1,4 +1,4 @@
 <launch>
-  <node pkg="clutter_butter" name="walker" type="walker" />
-  <test pkg="clutter_butter" test-name="utest" type="walker_tests" />
+  <node pkg="clutter_butter" name="push_planner" type="push_planner" />
+  <test pkg="clutter_butter" test-name="utest" type="push_planner_tests" />
 </launch>

@@ -28,41 +28,28 @@
  * DAMAGE.
  */
 
-#ifndef SRC_WALKER_H_
-#define SRC_WALKER_H_
+#ifndef PUSH_PLANNER_H_
+#define PUSH_PLANNER_H_
 
 #include <sensor_msgs/LaserScan.h>
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Point.h>
+#include "clutter_butter/Target.h"
+#include "clutter_butter/NewTarget.h"
+#include "clutter_butter/GetPushPlan.h"
 
 /**
- * Class for doing a random walk with obstacle avoidance
+ * Class for creating push plans for Targets to push them to the coordinates of the
+ * configured jail
  */
 class PushPlanner {
  private:
   ros::NodeHandle n;
-  // publisher for velocity twist messages
-  ros::Publisher pub;
-  // steps taken
-  int steps = 0;
-  /**
-   * random walk algorithm happens here.  Uses the laser scan data to determine
-   * proximity to any obstacles and to avoid them by modifying the velocity
-   */
-  void process_scan(const sensor_msgs::LaserScan::ConstPtr& scan);
-  /**
-   * sends velocity messages to rotate the robot angle degrees
-   * @param angle in degrees to rotate
-   */
-  void rotate_n_degrees(int angle);
-  /**
-   * sends velocity message to halt the robot in place
-   */
-  void stop();
-  /**
-   * sends velocity command to move forward by the provided increment
-   * @param increment
-   */
-  void forward(float increment);
+  // subscriber for Target push updates
+  ros::Subscriber sub;
+  // location of the Jail relative to the world frame
+  geometry_msgs::Point jail;
+  ros::ServiceServer addTargetService;
+  ros::ServiceServer getPushPlanService;
 
  public:
   /**
@@ -71,14 +58,23 @@ class PushPlanner {
    */
   explicit PushPlanner(ros::NodeHandle nh);
   /**
-   * Starts the node loop to listen for laser scan data and to send updated
-   * velocity commands to perform the random walk
+   * Starts the node loop to listen for new targets to create plans for
    */
-  void walk();
+  void spin();
+  /**
+   * Service for adding a new target
+   */
+  bool addTarget(clutter_butter::NewTargetRequest &req,
+                 clutter_butter::NewTargetResponse &resp);
+  /**
+   * Service for getting a push plan, if any are available
+   */
+  bool getPushPlan(clutter_butter::GetPushPlanRequest &req,
+                   clutter_butter::GetPushPlanResponse &resp);
   /**
    * Destructor
    */
   virtual ~PushPlanner();
 };
 
-#endif  // SRC_WALKER_H_
+#endif  // PUSH_PLANNER_H_

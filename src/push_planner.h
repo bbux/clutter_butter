@@ -50,6 +50,29 @@ class PushPlanner {
   geometry_msgs::Point jail;
   ros::ServiceServer addTargetService;
   ros::ServiceServer getPushPlanService;
+  // target list
+  std::vector<clutter_butter::Target> targets;
+  // current target id
+  int currentTargetId = -1;
+
+  // internale methods
+  /**
+   * determines if a target centroid constitutes a new target or not
+   * @param centroid of the suspected target
+   * @return the id if this is an existing target or -1 if new
+   */
+  int targetExists(geometry_msgs::Point centroid);
+  /**
+   * get the target with id if exists
+   * @param id of the target to get
+   */
+  clutter_butter::Target getTarget(int targetId);
+  /**
+   * creates a target using centroid provided
+   * @param centroid of target
+   * @return the constructed target
+   */
+  clutter_butter::Target createTarget(geometry_msgs::Point centroid);
 
  public:
   /**
@@ -64,13 +87,11 @@ class PushPlanner {
   /**
    * Service for adding a new target
    */
-  bool addTarget(clutter_butter::NewTargetRequest &req,
-                 clutter_butter::NewTargetResponse &resp);
+  bool addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp);
   /**
    * Service for getting a push plan, if any are available
    */
-  bool getPushPlan(clutter_butter::GetPushPlanRequest &req,
-                   clutter_butter::GetPushPlanResponse &resp);
+  bool getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp);
   /**
    * Destructor
    */

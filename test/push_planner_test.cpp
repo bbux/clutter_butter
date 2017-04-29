@@ -30,16 +30,46 @@
 #include <ros/ros.h>
 #include <ros/service_client.h>
 #include <gtest/gtest.h>
+#include <geometry_msgs/Point.h>
+#include "clutter_butter/Target.h"
+#include "clutter_butter/NewTarget.h"
+#include "clutter_butter/GetPushPlan.h"
 
-std::shared_ptr<ros::NodeHandle> nh;
+std::shared_ptr<ros::NodeHandle> n;
 
-TEST(TestSuite, oneCoolTeset) {
-  EXPECT_TRUE(1 + 1 == 2);
+TEST(ServiceTests, servicesExist) {
+  ros::ServiceClient addTargetClient = n->serviceClient<clutter_butter::NewTarget>("add_target");
+  ros::ServiceClient getPushPlanClient = n->serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
+
+  bool addTargetExists(addTargetClient.waitForExistence(ros::Duration(1)));
+  EXPECT_TRUE(addTargetExists);
+
+  bool getPushPlanExists(getPushPlanClient.waitForExistence(ros::Duration(1)));
+  EXPECT_TRUE(getPushPlanExists);
+}
+
+TEST(ServiceTests, addSingleTarget) {
+  ros::ServiceClient client = n->serviceClient<clutter_butter::NewTarget>("add_target");
+
+  clutter_butter::NewTarget srv;
+  geometry_msgs::Point centroid;
+  centroid.x = 1.0;
+  centroid.y = 1.0;
+  centroid.z = 0.0;
+  srv.request.centroid = centroid;
+
+  client.call(srv);
+
+  // verify that the returned Target has an ID and the centroids match
+  EXPECT_GE(0, srv.response.target.id);
+  EXPECT_EQ(1.0, srv.response.target.centroid.x);
+  EXPECT_EQ(1.0, srv.response.target.centroid.y);
+  EXPECT_EQ(0.0, srv.response.target.centroid.z);
 }
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "push_planner_tests");
-  nh.reset(new ros::NodeHandle);
+  n.reset(new ros::NodeHandle);
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

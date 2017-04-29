@@ -74,8 +74,8 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest_gtest(
     push_planner_tests
-    test/utest.launch
-    test/utest.cpp
+    test/push_planner_test.launch
+    test/push_planner_test.cpp
   )
   target_link_libraries(
     push_planner_tests

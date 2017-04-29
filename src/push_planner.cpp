@@ -27,16 +27,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
+#include <exception>
 #include "ros/ros.h"
 #include "push_planner.h"
+
 
 PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
-  addTargetService = n.advertiseService("add_target", &PushPlanner::addTarget,
-                                        this);
-  getPushPlanService = n.advertiseService("get_push_plan",
-                                          &PushPlanner::getPushPlan, this);
+  addTargetService = n.advertiseService("add_target", &PushPlanner::addTarget, this);
+  getPushPlanService = n.advertiseService("get_push_plan", &PushPlanner::getPushPlan, this);
 }
 
 PushPlanner::~PushPlanner() {
@@ -49,24 +49,56 @@ void PushPlanner::spin() {
   while (ros::ok()) {
     // any new targets to create plans for?
 
-
     // keep alive
     ros::spinOnce();
     loop_rate.sleep();
   }
 }
 
-bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req,
-                            clutter_butter::NewTargetResponse &resp) {
+bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp) {
+  int targetId = targetExists(req.centroid);
+  if (targetId != -1) {
+    clutter_butter::Target target = getTarget(targetId);
+    resp.target = target;
+  } else {
+    clutter_butter::Target target = createTarget(req.centroid);
+    resp.target = target;
+  }
+  return true;
+}
 
+bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp) {
   //TODO: implement
   return false;
 }
 
-bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req,
-                              clutter_butter::GetPushPlanResponse &resp) {
-  //TODO: implement
-  return false;
+int PushPlanner::targetExists(geometry_msgs::Point centroid) {
+  // TODO: figure out way to determine this?
+  // assume all are new for now?
+  return -1;
+}
+
+clutter_butter::Target PushPlanner::getTarget(int targetId) {
+  for (clutter_butter::Target t : targets) {
+    if (t.id == targetId) {
+      return t;
+    }
+  }
+  // cant find it
+  throw std::domain_error("invalid target id");
+}
+
+clutter_butter::Target PushPlanner::createTarget(geometry_msgs::Point centroid) {
+  clutter_butter::Target t;
+  geometry_msgs::Point c;
+  c.x = centroid.x;
+  c.y = centroid.y;
+  c.z = centroid.z;
+  t.centroid = c;
+  t.id = ++currentTargetId;
+
+  targets.push_back(t);
+  return t;
 }
 
 int main(int argc, char **argv) {

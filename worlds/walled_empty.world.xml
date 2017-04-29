@@ -82,11 +82,11 @@
     <model name='grey_wall'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -104,7 +104,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -128,11 +128,11 @@
     <model name='grey_wall_0'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -150,7 +150,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -174,11 +174,11 @@
     <model name='grey_wall_1'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -196,7 +196,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -220,11 +220,11 @@
     <model name='grey_wall_3'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -242,7 +242,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -266,11 +266,11 @@
     <model name='grey_wall_4'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -288,7 +288,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -312,11 +312,11 @@
     <model name='grey_wall_6'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -334,7 +334,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>7.5 0.2 0.8</size>
             </box>
           </geometry>
           <material>

@@ -356,9 +356,9 @@
       <pose>3 4.52028 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>900 589000000</sim_time>
-      <real_time>40 892341424</real_time>
-      <wall_time>1493506328 592443654</wall_time>
+      <sim_time>947 885000000</sim_time>
+      <real_time>47 718043997</real_time>
+      <wall_time>1493666394 826227914</wall_time>
       <model name='grey_wall'>
         <pose>-1.72123 2.30712 0.4 0 -0 0</pose>
         <link name='link'>
@@ -425,7 +425,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>5.0258 2.61709 3.72869 0 0.657796 -2.78298</pose>
+        <pose>-4.33432 -2.92941 5.70878 8.29636e-17 0.837796 0.876205</pose>
         <view_controller>orbit</view_controller>
       </camera>
     </gui>

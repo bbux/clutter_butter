@@ -31,6 +31,7 @@
 #ifndef PUSH_PLANNER_H_
 #define PUSH_PLANNER_H_
 
+#include <vector>
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Point.h>
 #include "clutter_butter/Target.h"
@@ -52,8 +53,14 @@ class PushPlanner {
   ros::ServiceServer getPushPlanService;
   // target list
   std::vector<clutter_butter::Target> targets;
+  // plan list
+  std::vector<clutter_butter::PushPlan> plans;
   // current target id
   int currentTargetId = -1;
+  // offset from target to start from
+  double offset = 0.0;
+  // minimum distance from target
+  double min_dist = 1.0;
 
   // internale methods
   /**
@@ -73,13 +80,29 @@ class PushPlanner {
    * @return the constructed target
    */
   clutter_butter::Target createTarget(geometry_msgs::Point centroid);
-
+  /**
+   * creates a push plan for the given target
+   * @param the target to push
+   * @return the constructed PushPlan for the target
+   */
+  clutter_butter::PushPlan createPushPlan(clutter_butter::Target target);
+  /**
+   * calculates distance between two points
+   * @param p1 point 1
+   * @param p2 point 2
+   * @return the euclidian distance between the two points
+   */
+  double distance(geometry_msgs::Point p1, geometry_msgs::Point p2);
  public:
   /**
    * Construct and initialize the push_planner node
    * @param nh the valid node handle for this node
    */
   explicit PushPlanner(ros::NodeHandle nh);
+  /**
+   * Destructor
+   */
+  virtual ~PushPlanner();
   /**
    * Starts the node loop to listen for new targets to create plans for
    */
@@ -92,10 +115,7 @@ class PushPlanner {
    * Service for getting a push plan, if any are available
    */
   bool getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp);
-  /**
-   * Destructor
-   */
-  virtual ~PushPlanner();
+
 };
 
 #endif  // PUSH_PLANNER_H_

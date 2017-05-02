@@ -1,4 +1,4 @@
 <launch>
-  <node pkg="clutter_butter" name="push_planner" type="push_planner" />
+  <node pkg="clutter_butter" name="push_planner" type="push_planner" output="screen"/>
   <test pkg="clutter_butter" test-name="push_planner_test" type="push_planner_tests" />
 </launch>

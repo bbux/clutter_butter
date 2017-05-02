@@ -31,12 +31,25 @@
 #include "ros/ros.h"
 #include "push_planner.h"
 
-
 PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
   addTargetService = n.advertiseService("add_target", &PushPlanner::addTarget, this);
   getPushPlanService = n.advertiseService("get_push_plan", &PushPlanner::getPushPlan, this);
+
+  // initialize jail
+  n.param<double>("jail_x", jail.x, 0.0);
+  n.param<double>("jail_y", jail.y, 0.0);
+  n.param<double>("jail_z", jail.z, 0.0);
+
+  // get initial offset
+  n.param<double>("offset", offset, 1.0);
+  // set reasonable min dist
+  double offset_dist = sqrt(pow(offset, 2) + pow(offset, 2));
+  if (offset_dist < 2) {
+    min_dist = offset_dist;
+  }
+  ROS_INFO_STREAM("Jail Coordinates: (" << jail.x << "," << jail.y << "," << jail.z << ")");
 }
 
 PushPlanner::~PushPlanner() {
@@ -48,6 +61,10 @@ void PushPlanner::spin() {
 
   while (ros::ok()) {
     // any new targets to create plans for?
+    if (targets.size() > 0) {
+      clutter_butter::PushPlan plan = createPushPlan(targets.front());
+      plans.push_back(plan);
+    }
 
     // keep alive
     ros::spinOnce();
@@ -58,9 +75,11 @@ void PushPlanner::spin() {
 bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp) {
   int targetId = targetExists(req.centroid);
   if (targetId != -1) {
+    ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already exists");
     clutter_butter::Target target = getTarget(targetId);
     resp.target = target;
   } else {
+    ROS_INFO_STREAM("Creating new target...");
     clutter_butter::Target target = createTarget(req.centroid);
     resp.target = target;
   }
@@ -68,13 +87,25 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
 }
 
 bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp) {
-  //TODO: implement
-  return false;
+  if (plans.size() > 0) {
+    ROS_INFO_STREAM("Found Push Plan...");
+    resp.plan = plans.front();
+    return true;
+  } else {
+    ROS_INFO_STREAM("Requested Push Plan, but none exists...");
+    return false;
+  }
 }
 
 int PushPlanner::targetExists(geometry_msgs::Point centroid) {
-  // TODO: figure out way to determine this?
-  // assume all are new for now?
+  for (clutter_butter::Target target : targets) {
+    // better way to do this?
+    double dist = distance(target.centroid, centroid);
+    ROS_INFO_STREAM("Distance to target: " << dist);
+    if (dist <= min_dist) {
+      return target.id;
+    }
+  }
   return -1;
 }
 
@@ -84,6 +115,7 @@ clutter_butter::Target PushPlanner::getTarget(int targetId) {
       return t;
     }
   }
+  ROS_ERROR_STREAM("No target with id: " << targetId << " exists!!");
   // cant find it
   throw std::domain_error("invalid target id");
 }
@@ -101,11 +133,62 @@ clutter_butter::Target PushPlanner::createTarget(geometry_msgs::Point centroid) 
   return t;
 }
 
+clutter_butter::PushPlan PushPlanner::createPushPlan(clutter_butter::Target target) {
+  clutter_butter::PushPlan plan;
+
+
+  geometry_msgs::Pose start;
+  geometry_msgs::Point startpos;
+  // easy cases, where target is perfectly aligned
+  if (target.centroid.x == jail.x) {
+    ROS_INFO_STREAM("Target Aligned Along X Axis");
+    startpos.x = target.centroid.x;
+    // shift by appropriate offset
+    if (target.centroid.y < jail.y) {
+      startpos.y = target.centroid.y - offset;
+    } else {
+      startpos.y = target.centroid.y + offset;
+    }
+  } else if (target.centroid.y == jail.y) {
+    ROS_INFO_STREAM("Target Aligned Along Y Axis");
+    startpos.y = target.centroid.y;
+    // shift by appropriate offset
+    if (target.centroid.x < jail.x) {
+      startpos.x = target.centroid.x - offset;
+    } else {
+      startpos.x = target.centroid.x + offset;
+    }
+  } else {
+    // harder case
+    // angle from target to jail centroid
+    double angle = atan2(jail.y - target.centroid.y, jail.x - target.centroid.x);
+    ROS_INFO_STREAM("Target at (" << target.centroid.x << ", " << target.centroid.y << ")");
+    ROS_INFO_STREAM("Angle from Jail: " << angle);
+  }
+  start.position = startpos;
+
+  geometry_msgs::Pose goal;
+  geometry_msgs::Point goalpos;
+  goalpos.x = jail.x;
+  goalpos.y = jail.y;
+  goalpos.z = jail.z;
+  goal.position = goalpos;
+
+  plan.start = start;
+  plan.goal = goal;
+  plan.target = target;
+  return plan;
+}
+
+double PushPlanner::distance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
+  return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y -p1.y, 2));
+}
+
 int main(int argc, char **argv) {
-  // basic initialization, then let push_planner class do the rest
-  ros::init(argc, argv, "push_planner");
-  ros::NodeHandle n;
-  PushPlanner push_planner(n);
-  push_planner.spin();
-  return 0;
+// basic initialization, then let push_planner class do the rest
+ros::init(argc, argv, "push_planner");
+ros::NodeHandle n;
+PushPlanner push_planner(n);
+push_planner.spin();
+return 0;
 }

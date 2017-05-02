@@ -38,8 +38,8 @@
 std::shared_ptr<ros::NodeHandle> n;
 
 TEST(ServiceTests, servicesExist) {
-  ros::ServiceClient addTargetClient = n->serviceClient<clutter_butter::NewTarget>("add_target");
-  ros::ServiceClient getPushPlanClient = n->serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
+  ros::ServiceClient addTargetClient = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+  ros::ServiceClient getPushPlanClient = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
 
   bool addTargetExists(addTargetClient.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(addTargetExists);
@@ -49,7 +49,7 @@ TEST(ServiceTests, servicesExist) {
 }
 
 TEST(ServiceTests, addSingleTarget) {
-  ros::ServiceClient client = n->serviceClient<clutter_butter::NewTarget>("add_target");
+  ros::ServiceClient client = n->serviceClient < clutter_butter::NewTarget > ("add_target");
 
   clutter_butter::NewTarget srv;
   geometry_msgs::Point centroid;
@@ -65,6 +65,59 @@ TEST(ServiceTests, addSingleTarget) {
   EXPECT_EQ(1.0, srv.response.target.centroid.x);
   EXPECT_EQ(1.0, srv.response.target.centroid.y);
   EXPECT_EQ(0.0, srv.response.target.centroid.z);
+}
+
+TEST(ServiceTests, targetIsAlreadyInJail) {
+  ros::ServiceClient add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+  ros::ServiceClient get_plan = n->serviceClient < clutter_butter::NewTarget > ("get_push_plan");
+
+  clutter_butter::NewTarget srv1;
+  geometry_msgs::Point centroid;
+  centroid.x = 0.0;
+  centroid.y = 0.0;
+  centroid.z = 0.0;
+  srv1.request.centroid = centroid;
+
+  add_target.call(srv1);
+
+  clutter_butter::GetPushPlan srv2;
+  get_plan.call(srv2);
+
+  // since already in jail, start is goal is jail
+  EXPECT_EQ(0.0, srv2.response.plan.start.position.x);
+  EXPECT_EQ(0.0, srv2.response.plan.start.position.y);
+  EXPECT_EQ(0.0, srv2.response.plan.start.position.z);
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.x);
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.y);
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.z);
+}
+
+TEST(ServiceTests, straitLineFromTargetToJail) {
+  ros::ServiceClient add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+  ros::ServiceClient get_plan = n->serviceClient < clutter_butter::NewTarget > ("get_push_plan");
+
+  clutter_butter::NewTarget srv1;
+  geometry_msgs::Point centroid;
+  // offset 4 to the right
+  centroid.x = 4.0;
+  centroid.y = 0.0;
+  centroid.z = 0.0;
+  srv1.request.centroid = centroid;
+  double offset = 1.0;
+
+  add_target.call(srv1);
+
+  clutter_butter::GetPushPlan srv2;
+  get_plan.call(srv2);
+
+  // expect start to be offset by a little from center of target
+  EXPECT_EQ(centroid.x + offset, srv2.response.plan.start.position.x);
+  EXPECT_EQ(centroid.y, srv2.response.plan.start.position.y);
+  EXPECT_EQ(centroid.z, srv2.response.plan.start.position.z);
+  // destinatioin is jail
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.x);
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.y);
+  EXPECT_EQ(0.0, srv2.response.plan.goal.position.z);
 }
 
 int main(int argc, char **argv) {

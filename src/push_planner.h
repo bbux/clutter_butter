@@ -37,6 +37,7 @@
 #include "clutter_butter/Target.h"
 #include "clutter_butter/NewTarget.h"
 #include "clutter_butter/GetPushPlan.h"
+#include "clutter_butter/ClearAll.h"
 
 /**
  * Class for creating push plans for Targets to push them to the coordinates of the
@@ -51,6 +52,8 @@ class PushPlanner {
   geometry_msgs::Point jail;
   ros::ServiceServer addTargetService;
   ros::ServiceServer getPushPlanService;
+  ros::ServiceServer clearAllService;
+
   // target list
   std::vector<clutter_butter::Target> targets;
   // plan list
@@ -115,6 +118,10 @@ class PushPlanner {
    * Service for getting a push plan, if any are available
    */
   bool getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp);
+  /**
+   * Service for clearing all targets and plans
+   */
+  bool clearAll(clutter_butter::ClearAllRequest &req, clutter_butter::ClearAllResponse &resp);
 
 };
 

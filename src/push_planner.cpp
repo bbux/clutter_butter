@@ -36,7 +36,7 @@ PushPlanner::PushPlanner(ros::NodeHandle nh) {
   // Register our services with the master.
   addTargetService = n.advertiseService("add_target", &PushPlanner::addTarget, this);
   getPushPlanService = n.advertiseService("get_push_plan", &PushPlanner::getPushPlan, this);
-
+  clearAllService = n.advertiseService("clear_push_planner", &PushPlanner::clearAll, this);
   // initialize jail
   n.param<double>("jail_x", jail.x, 0.0);
   n.param<double>("jail_y", jail.y, 0.0);
@@ -108,6 +108,12 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
     ROS_INFO_STREAM("Requested Push Plan, but none exists...");
     return false;
   }
+}
+
+bool PushPlanner::clearAll(clutter_butter::ClearAllRequest &req, clutter_butter::ClearAllResponse &resp) {
+  targets.clear();
+  plans.clear();
+  return true;
 }
 
 int PushPlanner::targetExists(geometry_msgs::Point centroid) {

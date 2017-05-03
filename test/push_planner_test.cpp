@@ -34,6 +34,7 @@
 #include "clutter_butter/Target.h"
 #include "clutter_butter/NewTarget.h"
 #include "clutter_butter/GetPushPlan.h"
+#include "clutter_butter/ClearAll.h"
 
 namespace {
 
@@ -44,6 +45,10 @@ class ServiceTest : public ::testing::Test {
     n.reset(new ros::NodeHandle);
     add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
     get_plan = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
+    // clear out all stored info
+    ros::ServiceClient clear_all = n->serviceClient < clutter_butter::ClearAll > ("clear_push_planner");
+    clutter_butter::ClearAll srv;
+    clear_all.call(srv);
   }
 
   virtual ~ServiceTest() {
@@ -80,7 +85,7 @@ TEST_F(ServiceTest, addSingleTarget) {
   add_target.call(srv);
 
   // verify that the returned Target has an ID and the centroids match
-  EXPECT_GE(0, srv.response.target.id);
+  EXPECT_GE(srv.response.target.id, 0);
   EXPECT_EQ(centroid.x, srv.response.target.centroid.x);
   EXPECT_EQ(centroid.y, srv.response.target.centroid.y);
   EXPECT_EQ(centroid.z, srv.response.target.centroid.z);

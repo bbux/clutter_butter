@@ -35,66 +35,76 @@
 #include "clutter_butter/NewTarget.h"
 #include "clutter_butter/GetPushPlan.h"
 
-std::shared_ptr<ros::NodeHandle> n;
+namespace {
 
-TEST(ServiceTests, servicesExist) {
-  ros::ServiceClient addTargetClient = n->serviceClient < clutter_butter::NewTarget > ("add_target");
-  ros::ServiceClient getPushPlanClient = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
+// The fixture for testing class PushPlanner services.
+class ServiceTest : public ::testing::Test {
+ protected:
+  ServiceTest() {
+    n.reset(new ros::NodeHandle);
+    add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+    get_plan = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
+  }
 
-  bool addTargetExists(addTargetClient.waitForExistence(ros::Duration(1)));
+  virtual ~ServiceTest() {
+    // You can do clean-up work that doesn't throw exceptions here.
+  }
+
+  // Objects declared here can be used by all tests in the test cases.
+  std::shared_ptr<ros::NodeHandle> n;
+  ros::ServiceClient add_target;
+  ros::ServiceClient get_plan;
+
+};
+}
+
+
+TEST_F(ServiceTest, servicesExist) {
+
+  bool addTargetExists(add_target.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(addTargetExists);
 
-  bool getPushPlanExists(getPushPlanClient.waitForExistence(ros::Duration(1)));
+  bool getPushPlanExists(get_plan.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(getPushPlanExists);
 }
 
-TEST(ServiceTests, addSingleTarget) {
-  ros::ServiceClient client = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+TEST_F(ServiceTest, addSingleTarget) {
 
   clutter_butter::NewTarget srv;
   geometry_msgs::Point centroid;
-  centroid.x = 1.0;
-  centroid.y = 1.0;
+  centroid.x = 5.0;
+  centroid.y = 5.0;
   centroid.z = 0.0;
   srv.request.centroid = centroid;
 
-  client.call(srv);
+  add_target.call(srv);
 
   // verify that the returned Target has an ID and the centroids match
   EXPECT_GE(0, srv.response.target.id);
-  EXPECT_EQ(1.0, srv.response.target.centroid.x);
-  EXPECT_EQ(1.0, srv.response.target.centroid.y);
-  EXPECT_EQ(0.0, srv.response.target.centroid.z);
+  EXPECT_EQ(centroid.x, srv.response.target.centroid.x);
+  EXPECT_EQ(centroid.y, srv.response.target.centroid.y);
+  EXPECT_EQ(centroid.z, srv.response.target.centroid.z);
 }
 
-TEST(ServiceTests, targetIsAlreadyInJail) {
-  ros::ServiceClient add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
-  ros::ServiceClient get_plan = n->serviceClient < clutter_butter::NewTarget > ("get_push_plan");
-
+TEST_F(ServiceTest, targetIsAlreadyInJail) {
   clutter_butter::NewTarget srv1;
   geometry_msgs::Point centroid;
-  centroid.x = 0.0;
-  centroid.y = 0.0;
+  centroid.x = 0.1;
+  centroid.y = 0.1;
   centroid.z = 0.0;
   srv1.request.centroid = centroid;
 
-  add_target.call(srv1);
+  bool added = add_target.call(srv1);
+  EXPECT_FALSE(added);
 
+  // test that no plan is made
   clutter_butter::GetPushPlan srv2;
-  get_plan.call(srv2);
-
-  // since already in jail, start is goal is jail
-  EXPECT_EQ(0.0, srv2.response.plan.start.position.x);
-  EXPECT_EQ(0.0, srv2.response.plan.start.position.y);
-  EXPECT_EQ(0.0, srv2.response.plan.start.position.z);
-  EXPECT_EQ(0.0, srv2.response.plan.goal.position.x);
-  EXPECT_EQ(0.0, srv2.response.plan.goal.position.y);
-  EXPECT_EQ(0.0, srv2.response.plan.goal.position.z);
+  bool has_plan = get_plan.call(srv2);
+  EXPECT_EQ(0, srv2.response.plan.target.id);
+  EXPECT_FALSE(has_plan);
 }
 
-TEST(ServiceTests, straitLineFromTargetToJail) {
-  ros::ServiceClient add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
-  ros::ServiceClient get_plan = n->serviceClient < clutter_butter::NewTarget > ("get_push_plan");
+TEST_F(ServiceTest, straitLineFromTargetToJail) {
 
   clutter_butter::NewTarget srv1;
   geometry_msgs::Point centroid;
@@ -109,6 +119,7 @@ TEST(ServiceTests, straitLineFromTargetToJail) {
 
   clutter_butter::GetPushPlan srv2;
   get_plan.call(srv2);
+  EXPECT_EQ(clutter_butter::GetPushPlanResponse::VALID, srv2.response.isvalid);
 
   // expect start to be offset by a little from center of target
   EXPECT_EQ(centroid.x + offset, srv2.response.plan.start.position.x);
@@ -122,7 +133,6 @@ TEST(ServiceTests, straitLineFromTargetToJail) {
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "push_planner_tests");
-  n.reset(new ros::NodeHandle);
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

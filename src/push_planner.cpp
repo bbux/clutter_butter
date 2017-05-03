@@ -62,7 +62,12 @@ void PushPlanner::spin() {
   while (ros::ok()) {
     // any new targets to create plans for?
     if (targets.size() > 0) {
-      clutter_butter::PushPlan plan = createPushPlan(targets.front());
+      ROS_INFO_STREAM("targets size: " << targets.size());
+      clutter_butter::Target end = targets.back();
+      targets.pop_back();
+      ROS_INFO_STREAM("targets size: " << targets.size());
+      clutter_butter::PushPlan plan = createPushPlan(end);
+      ROS_INFO_STREAM("Adding plan for target with id: " << plan.target.id);
       plans.push_back(plan);
     }
 
@@ -73,6 +78,13 @@ void PushPlanner::spin() {
 }
 
 bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp) {
+  // is it already in jail?
+  double dist = distance(req.centroid, jail);
+  if (dist < min_dist) {
+    ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already in jail");
+    return false;
+  }
+  // is it already known?
   int targetId = targetExists(req.centroid);
   if (targetId != -1) {
     ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already exists");
@@ -88,8 +100,9 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
 
 bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp) {
   if (plans.size() > 0) {
-    ROS_INFO_STREAM("Found Push Plan...");
-    resp.plan = plans.front();
+    resp.plan = plans.back();
+    ROS_INFO_STREAM("Found Push Plan with target id: " << resp.plan.target.id);
+    resp.isvalid = 1;
     return true;
   } else {
     ROS_INFO_STREAM("Requested Push Plan, but none exists...");
@@ -98,12 +111,12 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
 }
 
 int PushPlanner::targetExists(geometry_msgs::Point centroid) {
-  for (clutter_butter::Target target : targets) {
+  for (clutter_butter::PushPlan plan : plans) {
     // better way to do this?
-    double dist = distance(target.centroid, centroid);
+    double dist = distance(plan.target.centroid, centroid);
     ROS_INFO_STREAM("Distance to target: " << dist);
     if (dist <= min_dist) {
-      return target.id;
+      return plan.target.id;
     }
   }
   return -1;

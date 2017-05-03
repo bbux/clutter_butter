@@ -56,13 +56,13 @@ class PushPlanner {
   // plan list
   std::vector<clutter_butter::PushPlan> plans;
   // current target id
-  int currentTargetId = -1;
+  int currentTargetId = 0;
   // offset from target to start from
   double offset = 0.0;
   // minimum distance from target
   double min_dist = 1.0;
 
-  // internale methods
+  // internal methods
   /**
    * determines if a target centroid constitutes a new target or not
    * @param centroid of the suspected target

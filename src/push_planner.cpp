@@ -28,6 +28,7 @@
  * DAMAGE.
  */
 #include <exception>
+#include <math.h>
 #include "ros/ros.h"
 #include "push_planner.h"
 
@@ -65,7 +66,7 @@ void PushPlanner::spin() {
       clutter_butter::Target end = targets.back();
       targets.pop_back();
       clutter_butter::PushPlan plan = createPushPlan(end);
-      ROS_INFO_STREAM("Adding plan for target with id: " << plan.target.id);
+      ROS_INFO_STREAM("Created plan for target with id: " << plan.target.id);
       plans.push_back(plan);
     }
 
@@ -79,17 +80,17 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
   // is it already in jail?
   double dist = distance(req.centroid, jail);
   if (dist < minimumDistance) {
-    ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already in jail");
+    ROS_DEBUG_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already in jail");
     return false;
   }
   // is it already known?
   int targetId = targetExists(req.centroid);
   if (targetId != -1) {
-    ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already exists");
+    ROS_DEBUG_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already exists");
     clutter_butter::Target target = getTarget(targetId);
     resp.target = target;
   } else {
-    ROS_INFO_STREAM("Creating new target...");
+    ROS_DEBUG_STREAM("Creating new target...");
     clutter_butter::Target target = createTarget(req.centroid);
     resp.target = target;
   }
@@ -113,15 +114,15 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
     double shortestDistance = 1000000;
     for (clutter_butter::PushPlan plan : plans) {
       double dist = distance(plan.target.centroid, jail);
-      ROS_INFO_STREAM("Distance for " << plan.target.id << " is " << dist);
+      ROS_DEBUG_STREAM("Distance for " << plan.target.id << " is " << dist);
       if (dist < shortestDistance) {
-        ROS_INFO_STREAM("New shortest distance: " << plan.target.id);
+        ROS_DEBUG_STREAM("New shortest distance: " << plan.target.id);
         id = plan.target.id;
         shortestDistance = dist;
       }
     }
     resp.plan = getPushPlanForTarget(id);
-    ROS_INFO_STREAM("Found Push Plan with target id: " << resp.plan.target.id);
+    ROS_DEBUG_STREAM("Found Push Plan with target id: " << resp.plan.target.id);
     resp.isvalid = 1;
     return true;
   } else {
@@ -141,9 +142,9 @@ int PushPlanner::targetExists(geometry_msgs::Point centroid) {
   for (clutter_butter::PushPlan plan : plans) {
     // better way to do this?
     double dist = distance(plan.target.centroid, centroid);
-    ROS_INFO_STREAM("Distance to target: " << dist);
+    ROS_DEBUG_STREAM("Distance to target: " << dist);
     if (dist <= minimumDistance) {
-      ROS_INFO_STREAM("Target with id" << plan.target.id << " less that minimum distance of " << minimumDistance);
+      ROS_DEBUG_STREAM("Target with id" << plan.target.id << " less that minimum distance of " << minimumDistance);
       return plan.target.id;
     }
   }
@@ -180,33 +181,40 @@ clutter_butter::PushPlan PushPlanner::createPushPlan(clutter_butter::Target targ
 
   geometry_msgs::Pose start;
   geometry_msgs::Point startpos;
+  geometry_msgs::Quaternion startOrientation;
   // easy cases, where target is perfectly aligned
   if (target.centroid.x == jail.x) {
-    ROS_INFO_STREAM("Target Aligned Along X Axis");
+    ROS_DEBUG_STREAM("Target Aligned Along X Axis");
     startpos.x = target.centroid.x;
     // shift by appropriate offset
     if (target.centroid.y < jail.y) {
       startpos.y = target.centroid.y - offset;
+      setOrientation(startOrientation, 90);
     } else {
       startpos.y = target.centroid.y + offset;
+      setOrientation(startOrientation, 270);
     }
   } else if (target.centroid.y == jail.y) {
-    ROS_INFO_STREAM("Target Aligned Along Y Axis");
+    ROS_DEBUG_STREAM("Target Aligned Along Y Axis");
     startpos.y = target.centroid.y;
     // shift by appropriate offset
     if (target.centroid.x < jail.x) {
       startpos.x = target.centroid.x - offset;
+      setOrientation(startOrientation, 0);
     } else {
       startpos.x = target.centroid.x + offset;
+      setOrientation(startOrientation, 180);
     }
   } else {
     // harder case
     // angle from target to jail centroid
-    double angle = atan2(jail.y - target.centroid.y, jail.x - target.centroid.x);
-    ROS_INFO_STREAM("Target at (" << target.centroid.x << ", " << target.centroid.y << ")");
-    ROS_INFO_STREAM("Angle from Jail: " << angle);
+    double angle = M_PI * atan2(jail.y - target.centroid.y, jail.x - target.centroid.x) / 180.0;
+    setOrientation(startOrientation, 180);
+    ROS_DEBUG_STREAM("Target at (" << target.centroid.x << ", " << target.centroid.y << ")");
+    ROS_DEBUG_STREAM("Angle from Jail: " << angle);
   }
   start.position = startpos;
+  start.orientation = startOrientation;
 
   geometry_msgs::Pose goal;
   geometry_msgs::Point goalpos;
@@ -223,6 +231,22 @@ clutter_butter::PushPlan PushPlanner::createPushPlan(clutter_butter::Target targ
 
 double PushPlanner::distance(geometry_msgs::Point p1, geometry_msgs::Point p2) {
   return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y -p1.y, 2));
+}
+
+void PushPlanner::setOrientation(geometry_msgs::Quaternion &q, double zDegrees) {
+  double zRadians = M_PI * zDegrees / 180.0;
+  double t0 = std::cos(zRadians * 0.5);
+  double t1 = std::sin(zRadians * 0.5);
+  double t2 = std::cos(0 * 0.5);
+  double t3 = std::sin(0 * 0.5);
+  double t4 = std::cos(0 * 0.5);
+  double t5 = std::sin(0 * 0.5);
+
+  q.w = t0 * t2 * t4 + t1 * t3 * t5;
+  q.z = t1 * t2 * t4 - t0 * t3 * t5;
+  // these should be zero
+  q.x = t0 * t3 * t4 - t1 * t2 * t5;
+  q.y = t0 * t2 * t5 + t1 * t3 * t4;
 }
 
 int main(int argc, char **argv) {

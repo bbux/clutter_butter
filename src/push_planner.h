@@ -102,6 +102,10 @@ class PushPlanner {
    * @return the push plan for target with id
    */
   clutter_butter::PushPlan getPushPlanForTarget(int id);
+  /**
+   * sets the orientation for the quaternion
+   */
+  void setOrientation(geometry_msgs::Quaternion &startOrientation, double zAngleDegrees);
  public:
   /**
    * Construct and initialize the push_planner node

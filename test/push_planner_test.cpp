@@ -30,6 +30,7 @@
 #include <ros/ros.h>
 #include <ros/service_client.h>
 #include <gtest/gtest.h>
+#include <math.h>
 #include <geometry_msgs/Point.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/NewTarget.h"
@@ -69,6 +70,17 @@ geometry_msgs::Point getCentroid(double x, double y, double z) {
   centroid.y = y;
   centroid.z = z;
   return centroid;
+}
+
+double quaternionToZRotation(const geometry_msgs::Quaternion &q) {
+  double ysqr = q.y * q.y;
+
+  // yaw (z-axis rotation)
+  double t3 = +2.0 * (q.w * q.z + q.x * q.y);
+  double t4 = +1.0 - 2.0 * (ysqr + q.z * q.z);
+  double yaw = std::atan2(t3, t4);
+
+  return yaw * 180.0 / M_PI;
 }
 
 TEST_F(ServiceTest, servicesExist) {
@@ -191,6 +203,36 @@ TEST_F(ServiceTest, closerTargetPlanReturnedFirst2) {
   bool hasPlan = getPushPlanClient.call(getPushPlanService);
   EXPECT_TRUE(hasPlan);
   EXPECT_EQ(id1, getPushPlanService.response.plan.target.id) << "Expected closer target to have plan created but was not!";
+}
+
+TEST_F(ServiceTest, pushOrientationCorrectAlignedX) {
+  clutter_butter::NewTarget newTargetService;
+  geometry_msgs::Point centroid = getCentroid(0.0, 5.0, 0.0);
+  newTargetService.request.centroid = centroid;
+  // add target aligned on the X axis
+  addNewTargetClient.call(newTargetService);
+
+  // verify that the orientation is along the Y axis
+  clutter_butter::GetPushPlan getPushPlanService;
+  EXPECT_TRUE(getPushPlanClient.call(getPushPlanService));
+  double angle = quaternionToZRotation(getPushPlanService.response.plan.start.orientation);
+
+  EXPECT_NEAR(-90.0, angle, 0.01) << "Angle of orientation not what was expected";
+}
+
+TEST_F(ServiceTest, pushOrientationCorrectAlignedY) {
+  clutter_butter::NewTarget newTargetService;
+  geometry_msgs::Point centroid = getCentroid(10.0, 0.0, 0.0);
+  newTargetService.request.centroid = centroid;
+  // add target aligned on the X axis
+  addNewTargetClient.call(newTargetService);
+
+  // verify that the orientation is along the Y axis
+  clutter_butter::GetPushPlan getPushPlanService;
+  EXPECT_TRUE(getPushPlanClient.call(getPushPlanService));
+  double angle = quaternionToZRotation(getPushPlanService.response.plan.start.orientation);
+
+  EXPECT_NEAR(180, angle, 0.01) << "Angle of orientation not what was expected";
 }
 
 int main(int argc, char **argv) {

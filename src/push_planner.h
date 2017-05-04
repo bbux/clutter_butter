@@ -63,7 +63,7 @@ class PushPlanner {
   // offset from target to start from
   double offset = 0.0;
   // minimum distance from target
-  double min_dist = 1.0;
+  double minimumDistance = 1.0;
 
   // internal methods
   /**
@@ -96,6 +96,12 @@ class PushPlanner {
    * @return the euclidian distance between the two points
    */
   double distance(geometry_msgs::Point p1, geometry_msgs::Point p2);
+  /**
+   * gets the push plan for target with given id, raise domain error if target not there
+   * @param id of target
+   * @return the push plan for target with id
+   */
+  clutter_butter::PushPlan getPushPlanForTarget(int id);
  public:
   /**
    * Construct and initialize the push_planner node

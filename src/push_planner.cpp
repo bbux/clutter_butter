@@ -47,7 +47,7 @@ PushPlanner::PushPlanner(ros::NodeHandle nh) {
   // set reasonable min dist
   double offset_dist = sqrt(pow(offset, 2) + pow(offset, 2));
   if (offset_dist < 2) {
-    min_dist = offset_dist;
+    minimumDistance = offset_dist;
   }
   ROS_INFO_STREAM("Jail Coordinates: (" << jail.x << "," << jail.y << "," << jail.z << ")");
 }
@@ -62,10 +62,8 @@ void PushPlanner::spin() {
   while (ros::ok()) {
     // any new targets to create plans for?
     if (targets.size() > 0) {
-      ROS_INFO_STREAM("targets size: " << targets.size());
       clutter_butter::Target end = targets.back();
       targets.pop_back();
-      ROS_INFO_STREAM("targets size: " << targets.size());
       clutter_butter::PushPlan plan = createPushPlan(end);
       ROS_INFO_STREAM("Adding plan for target with id: " << plan.target.id);
       plans.push_back(plan);
@@ -80,7 +78,7 @@ void PushPlanner::spin() {
 bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp) {
   // is it already in jail?
   double dist = distance(req.centroid, jail);
-  if (dist < min_dist) {
+  if (dist < minimumDistance) {
     ROS_INFO_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already in jail");
     return false;
   }
@@ -98,9 +96,31 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
   return true;
 }
 
+clutter_butter::PushPlan PushPlanner::getPushPlanForTarget(int id) {
+  for (clutter_butter::PushPlan plan : plans) {
+    if (plan.target.id == id) {
+      return plan;
+    }
+  }
+  ROS_ERROR_STREAM("No target with id: " << id << " exists!!");
+  // cant find it
+  throw std::domain_error("invalid target id");
+}
+
 bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp) {
   if (plans.size() > 0) {
-    resp.plan = plans.back();
+    int id = plans.front().target.id;
+    double shortestDistance = 1000000;
+    for (clutter_butter::PushPlan plan : plans) {
+      double dist = distance(plan.target.centroid, jail);
+      ROS_INFO_STREAM("Distance for " << plan.target.id << " is " << dist);
+      if (dist < shortestDistance) {
+        ROS_INFO_STREAM("New shortest distance: " << plan.target.id);
+        id = plan.target.id;
+        shortestDistance = dist;
+      }
+    }
+    resp.plan = getPushPlanForTarget(id);
     ROS_INFO_STREAM("Found Push Plan with target id: " << resp.plan.target.id);
     resp.isvalid = 1;
     return true;
@@ -113,6 +133,7 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
 bool PushPlanner::clearAll(clutter_butter::ClearAllRequest &req, clutter_butter::ClearAllResponse &resp) {
   targets.clear();
   plans.clear();
+  currentTargetId = 0;
   return true;
 }
 
@@ -121,7 +142,8 @@ int PushPlanner::targetExists(geometry_msgs::Point centroid) {
     // better way to do this?
     double dist = distance(plan.target.centroid, centroid);
     ROS_INFO_STREAM("Distance to target: " << dist);
-    if (dist <= min_dist) {
+    if (dist <= minimumDistance) {
+      ROS_INFO_STREAM("Target with id" << plan.target.id << " less that minimum distance of " << minimumDistance);
       return plan.target.id;
     }
   }

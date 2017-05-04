@@ -43,12 +43,12 @@ class ServiceTest : public ::testing::Test {
  protected:
   ServiceTest() {
     n.reset(new ros::NodeHandle);
-    add_target = n->serviceClient < clutter_butter::NewTarget > ("add_target");
-    get_plan = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
+    addNewTargetClient = n->serviceClient < clutter_butter::NewTarget > ("add_target");
+    getPushPlanClient = n->serviceClient < clutter_butter::GetPushPlan > ("get_push_plan");
     // clear out all stored info
-    ros::ServiceClient clear_all = n->serviceClient < clutter_butter::ClearAll > ("clear_push_planner");
+    ros::ServiceClient clearAllServiceClient = n->serviceClient < clutter_butter::ClearAll > ("clear_push_planner");
     clutter_butter::ClearAll srv;
-    clear_all.call(srv);
+    clearAllServiceClient.call(srv);
   }
 
   virtual ~ServiceTest() {
@@ -57,32 +57,34 @@ class ServiceTest : public ::testing::Test {
 
   // Objects declared here can be used by all tests in the test cases.
   std::shared_ptr<ros::NodeHandle> n;
-  ros::ServiceClient add_target;
-  ros::ServiceClient get_plan;
+  ros::ServiceClient addNewTargetClient;
+  ros::ServiceClient getPushPlanClient;
 
 };
 }
 
+geometry_msgs::Point getCentroid(double x, double y, double z) {
+  geometry_msgs::Point centroid;
+  centroid.x = x;
+  centroid.y = y;
+  centroid.z = z;
+  return centroid;
+}
 
 TEST_F(ServiceTest, servicesExist) {
-
-  bool addTargetExists(add_target.waitForExistence(ros::Duration(1)));
+  bool addTargetExists(addNewTargetClient.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(addTargetExists);
 
-  bool getPushPlanExists(get_plan.waitForExistence(ros::Duration(1)));
+  bool getPushPlanExists(getPushPlanClient.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(getPushPlanExists);
 }
 
 TEST_F(ServiceTest, addSingleTarget) {
-
   clutter_butter::NewTarget srv;
-  geometry_msgs::Point centroid;
-  centroid.x = 5.0;
-  centroid.y = 5.0;
-  centroid.z = 0.0;
+  geometry_msgs::Point centroid = getCentroid(5.0, 5.0, 0.0);
   srv.request.centroid = centroid;
 
-  add_target.call(srv);
+  addNewTargetClient.call(srv);
 
   // verify that the returned Target has an ID and the centroids match
   EXPECT_GE(srv.response.target.id, 0);
@@ -93,37 +95,44 @@ TEST_F(ServiceTest, addSingleTarget) {
 
 TEST_F(ServiceTest, targetIsAlreadyInJail) {
   clutter_butter::NewTarget srv1;
-  geometry_msgs::Point centroid;
-  centroid.x = 0.1;
-  centroid.y = 0.1;
-  centroid.z = 0.0;
+  geometry_msgs::Point centroid = getCentroid(0.1, 0.1, 0.0);
   srv1.request.centroid = centroid;
 
-  bool added = add_target.call(srv1);
+  bool added = addNewTargetClient.call(srv1);
   EXPECT_FALSE(added);
 
   // test that no plan is made
   clutter_butter::GetPushPlan srv2;
-  bool has_plan = get_plan.call(srv2);
+  bool has_plan = getPushPlanClient.call(srv2);
   EXPECT_EQ(0, srv2.response.plan.target.id);
   EXPECT_FALSE(has_plan);
 }
 
-TEST_F(ServiceTest, straitLineFromTargetToJail) {
-
+TEST_F(ServiceTest, targetIsAlreadyIdentified) {
   clutter_butter::NewTarget srv1;
-  geometry_msgs::Point centroid;
-  // offset 4 to the right
-  centroid.x = 4.0;
-  centroid.y = 0.0;
-  centroid.z = 0.0;
+  geometry_msgs::Point centroid = getCentroid(3.0, 1.0, 0.0);
+  srv1.request.centroid = centroid;
+
+  bool added = addNewTargetClient.call(srv1);
+  EXPECT_TRUE(added);
+
+  // shift the centroid by small amount
+  srv1.request.centroid.x += 0.1;
+  srv1.request.centroid.y += 0.1;
+  added = addNewTargetClient.call(srv1);
+  EXPECT_FALSE(added) << "Expected attempt to add close target to fail, but did not!";
+}
+
+TEST_F(ServiceTest, straitLineFromTargetToJail) {
+  clutter_butter::NewTarget srv1;
+  geometry_msgs::Point centroid = getCentroid(4.0, 0.0, 0.0);
   srv1.request.centroid = centroid;
   double offset = 1.0;
 
-  add_target.call(srv1);
+  addNewTargetClient.call(srv1);
 
   clutter_butter::GetPushPlan srv2;
-  get_plan.call(srv2);
+  getPushPlanClient.call(srv2);
   EXPECT_EQ(clutter_butter::GetPushPlanResponse::VALID, srv2.response.isvalid);
 
   // expect start to be offset by a little from center of target
@@ -134,6 +143,54 @@ TEST_F(ServiceTest, straitLineFromTargetToJail) {
   EXPECT_EQ(0.0, srv2.response.plan.goal.position.x);
   EXPECT_EQ(0.0, srv2.response.plan.goal.position.y);
   EXPECT_EQ(0.0, srv2.response.plan.goal.position.z);
+}
+
+TEST_F(ServiceTest, closerTargetPlanReturnedFirst1) {
+  clutter_butter::NewTarget newTargetService;
+  geometry_msgs::Point centroid = getCentroid(0.0, 8.0, 0.0);
+  newTargetService.request.centroid = centroid;
+  // add target 1
+  addNewTargetClient.call(newTargetService);
+  int id1 = newTargetService.response.target.id;
+
+  // set target two closer to jail
+  newTargetService.request.centroid.y = 6.0;
+  addNewTargetClient.call(newTargetService);
+  int id2 = newTargetService.response.target.id;
+
+  EXPECT_NE(id1, id2);
+
+  // add a little delay for plans to materialize
+  ros::Duration(0.5).sleep();
+
+  clutter_butter::GetPushPlan getPushPlanService;
+  bool hasPlan = getPushPlanClient.call(getPushPlanService);
+  EXPECT_TRUE(hasPlan);
+  EXPECT_EQ(id2, getPushPlanService.response.plan.target.id) << "Expected closer target to have plan created but was not!";
+}
+
+TEST_F(ServiceTest, closerTargetPlanReturnedFirst2) {
+  clutter_butter::NewTarget newTargetService;
+  geometry_msgs::Point centroid = getCentroid(0.0, 6.0, 0.0);
+  newTargetService.request.centroid = centroid;
+  // add target 1
+  addNewTargetClient.call(newTargetService);
+  int id1 = newTargetService.response.target.id;
+
+  // set target two further from jail
+  newTargetService.request.centroid.y = 8.0;
+  addNewTargetClient.call(newTargetService);
+  int id2 = newTargetService.response.target.id;
+
+  EXPECT_NE(id1, id2);
+
+  // add a little delay for plans to materialize
+  ros::Duration(0.5).sleep();
+
+  clutter_butter::GetPushPlan getPushPlanService;
+  bool hasPlan = getPushPlanClient.call(getPushPlanService);
+  EXPECT_TRUE(hasPlan);
+  EXPECT_EQ(id1, getPushPlanService.response.plan.target.id) << "Expected closer target to have plan created but was not!";
 }
 
 int main(int argc, char **argv) {

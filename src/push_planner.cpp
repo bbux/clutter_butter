@@ -27,10 +27,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-#include <exception>
-#include <math.h>
 #include "ros/ros.h"
 #include "push_planner.h"
+#include <math.h>
+#include <exception>
 
 PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;
@@ -177,11 +177,10 @@ clutter_butter::Target PushPlanner::createTarget(geometry_msgs::Point centroid) 
 
 clutter_butter::PushPlan PushPlanner::createPushPlan(clutter_butter::Target target) {
   clutter_butter::PushPlan plan;
-
-
   geometry_msgs::Pose start;
   geometry_msgs::Point startpos;
   geometry_msgs::Quaternion startOrientation;
+
   // easy cases, where target is perfectly aligned
   if (target.centroid.x == jail.x) {
     ROS_DEBUG_STREAM("Target Aligned Along X Axis");

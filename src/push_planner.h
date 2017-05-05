@@ -106,6 +106,7 @@ class PushPlanner {
    * sets the orientation for the quaternion
    */
   void setOrientation(geometry_msgs::Quaternion &startOrientation, double zAngleDegrees);
+
  public:
   /**
    * Construct and initialize the push_planner node
@@ -132,7 +133,6 @@ class PushPlanner {
    * Service for clearing all targets and plans
    */
   bool clearAll(clutter_butter::ClearAllRequest &req, clutter_butter::ClearAllResponse &resp);
-
 };
 
 #endif  // PUSH_PLANNER_H_

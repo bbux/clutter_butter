@@ -69,6 +69,18 @@ add_dependencies(
 	${PROJECT_NAME}_generate_messages_cpp
 )
 
+add_executable(
+	push_executor 
+	src/push_executor.cpp
+)
+target_link_libraries(
+	push_executor
+	${catkin_LIBRARIES}
+)
+add_dependencies(
+	push_executor
+	${PROJECT_NAME}_generate_messages_cpp
+)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)

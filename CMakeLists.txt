@@ -27,6 +27,7 @@ add_service_files(
 	SetPushExecutorState.srv
 	NewTarget.srv
 	GetPushPlan.srv
+	ClearAll.srv
 )
 
 ## Needs to be declared be for catkin_package
@@ -56,15 +57,15 @@ include_directories(
 )
  
 add_executable(
-	walker 
-	src/walker.cpp
+	push_planner 
+	src/push_planner.cpp
 )
 target_link_libraries(
-	walker
+	push_planner
 	${catkin_LIBRARIES}
 )
 add_dependencies(
-	walker
+	push_planner
 	${PROJECT_NAME}_generate_messages_cpp
 )
 
@@ -73,17 +74,17 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
   add_rostest_gtest(
-    walker_tests
-    test/utest.launch
-    test/utest.cpp
+    push_planner_tests
+    test/push_planner_test.launch
+    test/push_planner_test.cpp
   )
   target_link_libraries(
-    walker_tests
+    push_planner_tests
     ${catkin_LIBRARIES}
   )
   add_dependencies(
-    walker_tests
-    walker
+    push_planner_tests
+    push_planner
     ${PROJECT_NAME}_generate_messages_cpp
     ${catkin_EXPORTED_TARGETS}
   )

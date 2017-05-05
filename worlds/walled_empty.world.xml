@@ -82,11 +82,11 @@
     <model name='grey_wall'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -104,7 +104,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -128,11 +128,11 @@
     <model name='grey_wall_0'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -150,7 +150,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -174,11 +174,11 @@
     <model name='grey_wall_1'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -196,7 +196,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -220,11 +220,11 @@
     <model name='grey_wall_3'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -242,7 +242,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -266,11 +266,11 @@
     <model name='grey_wall_4'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -288,7 +288,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -312,11 +312,11 @@
     <model name='grey_wall_6'>
       <static>1</static>
       <link name='link'>
-        <pose>0 0 1.4 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -334,7 +334,7 @@
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
-              <size>7.5 0.2 2.8</size>
+              <size>3 0.2 0.8</size>
             </box>
           </geometry>
           <material>
@@ -356,58 +356,58 @@
       <pose>3 4.52028 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>507 295000000</sim_time>
-      <real_time>55 974969666</real_time>
-      <wall_time>1493081220 443282931</wall_time>
+      <sim_time>947 885000000</sim_time>
+      <real_time>47 718043997</real_time>
+      <wall_time>1493666394 826227914</wall_time>
       <model name='grey_wall'>
-        <pose>-4.45669 4.51369 0 0 -0 0</pose>
+        <pose>-1.72123 2.30712 0.4 0 -0 0</pose>
         <link name='link'>
-          <pose>-4.45669 4.51369 1.4 0 -0 0</pose>
+          <pose>-1.72123 2.30712 0.4 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='grey_wall_0'>
-        <pose>-4.17438 -2.94975 0 0 -0 0</pose>
+        <pose>-1.63832 -0.63758 0.4 0 -0 0</pose>
         <link name='link'>
-          <pose>-4.17438 -2.94975 1.4 0 -0 0</pose>
+          <pose>-1.63832 -0.63758 0.4 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='grey_wall_1'>
-        <pose>-8.24091 0.730795 0 0 0 -1.53854</pose>
+        <pose>-3.08152 0.859151 0.4 0 0 -1.53854</pose>
         <link name='link'>
-          <pose>-8.24091 0.730795 1.4 0 0 -1.53854</pose>
+          <pose>-3.08152 0.859151 0.4 0 0 -1.53854</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='grey_wall_3'>
-        <pose>6.66121 0.777125 0.00212 0 0 -1.57102</pose>
+        <pose>2.5426 0.828043 0.4 0 0 -1.57102</pose>
         <link name='link'>
-          <pose>6.66121 0.777125 1.40212 0 0 -1.57102</pose>
+          <pose>2.5426 0.828043 0.4 0 0 -1.57102</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='grey_wall_4'>
-        <pose>2.97517 -2.95606 0 0 -0 0</pose>
+        <pose>1.14283 -0.636818 0.4 0 -0 0</pose>
         <link name='link'>
-          <pose>2.97517 -2.95606 1.4 0 -0 0</pose>
+          <pose>1.14283 -0.636818 0.4 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='grey_wall_6'>
-        <pose>3 4.52028 0 0 -0 0</pose>
+        <pose>1.15129 2.3095 0.4 0 -0 0</pose>
         <link name='link'>
-          <pose>3 4.52028 1.4 0 -0 0</pose>
+          <pose>1.15129 2.3095 0.4 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -425,7 +425,7 @@
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>14.5151 0.430642 17.323 -2.19353e-17 0.8858 2.8362</pose>
+        <pose>-4.33432 -2.92941 5.70878 8.29636e-17 0.837796 0.876205</pose>
         <view_controller>orbit</view_controller>
       </camera>
     </gui>

@@ -34,6 +34,7 @@
 #include <vector>
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Pose.h>
+#include <nav_msgs/Odometry.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/GetPushPlan.h"
 #include "clutter_butter/SetPushExecutorState.h"
@@ -46,9 +47,14 @@ class PushExecutor {
   ros::NodeHandle n;
   ros::ServiceServer setStateService;
   ros::ServiceClient getPushPlanClient;
-
+  // publisher for velocity twist messages
+  ros::Publisher velocityPub;
+  // subscriber for odometry, where are we now?
+  ros::Subscriber odomSubscriber;
   // state
   bool active = false;
+  // location
+  geometry_msgs::Pose location;
 
   // internal methods
   /**
@@ -62,6 +68,25 @@ class PushExecutor {
    * @return if move was successful
    */
   bool goTo(geometry_msgs::Pose pose);
+
+  /**
+   * sends velocity messages to rotate the robot angle degrees
+   * @param angle in degrees to rotate
+   */
+  void rotateNDegrees(int angle);
+  /**
+   * sends velocity message to halt the robot in place
+   */
+  void stop();
+  /**
+   * sends velocity command to move forward by the provided increment
+   * @param increment
+   */
+  void forward(float increment);
+  /**
+   * handler for odom subscriber
+   */
+  void handleOdom(nav_msgs::Odometry odom);
 
  public:
   /**

@@ -100,4 +100,21 @@ if(CATKIN_ENABLE_TESTING)
     ${PROJECT_NAME}_generate_messages_cpp
     ${catkin_EXPORTED_TARGETS}
   )
+  
+  add_rostest_gtest(
+    push_executor_tests
+    test/push_executor_test.launch
+    test/push_executor_test.cpp
+  )
+  target_link_libraries(
+    push_executor_tests
+    ${catkin_LIBRARIES}
+  )
+  add_dependencies(
+    push_executor_tests
+    push_planner
+    push_executor
+    ${PROJECT_NAME}_generate_messages_cpp
+    ${catkin_EXPORTED_TARGETS}
+  )
 endif()

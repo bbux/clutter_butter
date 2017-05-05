@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Brian Buxton <bbux10@gmail.com>
- * @brief unit test for TODO: Fill in brief
+ * @brief unit test for push planner
  * @copyright BSD License
  * Copyright (c) 2017 Brian Buxton
  * All rights reserved.

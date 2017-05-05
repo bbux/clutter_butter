@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="clutter_butter" name="push_executor" type="push_executor" output="screen"/>
+  <test pkg="clutter_butter" test-name="push_executor_test" type="push_executor_tests" />
+</launch>

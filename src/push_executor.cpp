@@ -51,6 +51,11 @@ void PushExecutor::spin() {
     // any plans to execute
     if (active) {
       ROS_INFO_STREAM("Were active, time to push stuff...");
+      clutter_butter::GetPushPlan getPushPlanService;
+      bool hasPlan = getPushPlanClient.call(getPushPlanService);
+      if (hasPlan) {
+        executePlan(getPushPlanService.response.plan);
+      }
     }
 
     // keep alive
@@ -62,11 +67,26 @@ void PushExecutor::spin() {
 bool PushExecutor::setState(clutter_butter::SetPushExecutorStateRequest &req,
                             clutter_butter::SetPushExecutorStateResponse &resp) {
   active = (req.state == clutter_butter::SetPushExecutorStateRequest::PUSHING);
+  ROS_INFO_STREAM("Set state to: " << req.state);
   // is this useful?
   resp.result = clutter_butter::SetPushExecutorStateResponse::OK;
   return true;
 }
 
+void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
+  ROS_INFO_STREAM("Executing plan for target with id: " << plan.target.id << "...");
+  // go to start position, avoiding obstacles along the way
+  goTo(plan.start);
+  // push target keeping track of centroid, and sending this to target update service
+
+  // if off track, abandon this plan and request a new one
+}
+
+bool PushExecutor::goTo(geometry_msgs::Pose pose) {
+  ROS_INFO_STREAM("Attempting to move to (" << pose.position.x << ", " << pose.position.y << ")");
+  // TODO: Move the bot!
+  return true;
+}
 
 int main(int argc, char **argv) {
   // basic initialization, then let push_executor class do the rest

@@ -33,7 +33,7 @@
 
 #include <vector>
 #include <sensor_msgs/LaserScan.h>
-#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/GetPushPlan.h"
 #include "clutter_butter/SetPushExecutorState.h"
@@ -51,6 +51,17 @@ class PushExecutor {
   bool active = false;
 
   // internal methods
+  /**
+   * Executes the given plan
+   * @param plan to execute
+   */
+  void executePlan(clutter_butter::PushPlan plan);
+  /**
+   * Moves the robot to the location specified
+   * @param pose to move to
+   * @return if move was successful
+   */
+  bool goTo(geometry_msgs::Pose pose);
 
  public:
   /**

@@ -41,6 +41,10 @@ class PushExecutorTest : public ::testing::Test {
   PushExecutorTest() {
     n.reset(new ros::NodeHandle);
     setStateClient = n->serviceClient<clutter_butter::SetPushExecutorState>("set_executor_state");
+    // set active
+    clutter_butter::SetPushExecutorState srv;
+    srv.request.state = clutter_butter::SetPushExecutorState::Request::PUSHING;
+    setStateClient.call(srv);
   }
 
   virtual ~PushExecutorTest() {
@@ -58,6 +62,8 @@ TEST_F(PushExecutorTest, servicesExist) {
   bool addTargetExists(setStateClient.waitForExistence(ros::Duration(1)));
   EXPECT_TRUE(addTargetExists);
 }
+
+
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "push_planner_tests");

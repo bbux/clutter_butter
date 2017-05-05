@@ -145,7 +145,7 @@ TEST_F(ServiceTest, straitLineFromTargetToJail) {
 
   clutter_butter::GetPushPlan srv2;
   getPushPlanClient.call(srv2);
-  EXPECT_EQ(clutter_butter::GetPushPlanResponse::VALID, srv2.response.isvalid);
+  EXPECT_EQ(clutter_butter::GetPushPlan::Request::VALID, srv2.response.isvalid);
 
   // expect start to be offset by a little from center of target
   EXPECT_EQ(centroid.x + offset, srv2.response.plan.start.position.x);

@@ -79,13 +79,13 @@ class PushExecutor {
    * rotates the robot to the desire angle
    * @param angle in degrees to orient to
    */
-  void setOrientation(int angle);
+  void setOrientation(double angle);
   /**
    *  sends velocity message to rotate desired degrees
    *  @param angle to rotate
    *  @param speed to rotate by
    */
-  void rotateNDegrees(int angle, double speed);
+  void rotateNDegrees(double angle, double speed);
   /**
    * sends velocity message to halt the robot in place
    */

@@ -134,7 +134,7 @@ bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_
 }
 
 bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {
-  setOrientation(quaternionToZAngle(req.orientation));
+  setOrientation(req.angleDegrees);
   return true;
 }
 
@@ -159,9 +159,14 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   // first align our orientation to point to the goal
   setOrientation(angleToGoal);
   int count = 0;
-  double speed = 0.5;
   while(distance > 0.1) {
-    distance = calculateDistance(getOdom().position, goal);
+    forward(distance/2);
+    // re adjust
+    location = getOdom();
+    distance = calculateDistance(location.position, goal);
+    //angleToGoal = angleDifference(location.position, goal);
+    //setOrientation(angleToGoal);
+
     ROS_INFO_STREAM("Current distance: " << distance);
     count++;
     if (count > 100) {
@@ -176,53 +181,63 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   return calculateDistance(location.position, goal);
 }
 
-void PushExecutor::setOrientation(int desiredAngle) {
+void PushExecutor::setOrientation(double desiredAngle) {
   ROS_INFO_STREAM("Attempting to orient to " << desiredAngle << " degrees");
 
   geometry_msgs::Pose location = getOdom();
   double currentAngle = quaternionToZAngle(location.orientation);
+  ROS_INFO_STREAM("Current angle: " << currentAngle << " desired: " << desiredAngle);
 
   double delta = desiredAngle - currentAngle;
 
-  while (delta > 0.01) {
+  while (fabs(delta) > 0.05) {
     ROS_INFO_STREAM("Angle delta: " << delta << " degrees");
     if (fabs(delta) > 20) {
-      rotateNDegrees(delta, 20);
+      rotateNDegrees(delta/2, 20);
     // slow down a little
     } else if (fabs(delta) < 20 && fabs(delta) > 5) {
-      rotateNDegrees(delta, 5);
+      rotateNDegrees(delta/2, 5);
     // slow down a lot
     } else {
-      rotateNDegrees(delta, 1);
+      rotateNDegrees(delta/2, 1);
     }
     currentAngle = quaternionToZAngle(getOdom().orientation);
     delta = desiredAngle - currentAngle;
-    // TODO: Delete this!!!!
-    ros::Duration(1).sleep();
+    // give things time to adjust
+    //ros::Duration(0.5).sleep();
   }
+
+  ROS_INFO_STREAM("Final angle " << currentAngle << " degrees");
+
 }
 
-void PushExecutor::rotateNDegrees(int angle, double speed) {
+void PushExecutor::rotateNDegrees(double angle, double speed) {
   geometry_msgs::Twist vel = zero_twist();
 
   double angular_speed = speed * 2 * M_PI / 360.0;
   double relative_angle = angle * 2 * M_PI / 360.0;
-  vel.angular.z = angular_speed;
-  ROS_DEBUG_STREAM("Attempting to rotate " << angle << " degrees with speed " << angular_speed);
+  if (angle > 0) {
+    vel.angular.z = angular_speed;
+  } else {
+    vel.angular.z = -angular_speed;
+  }
+  ROS_INFO_STREAM("Attempting to rotate " << angle << " degrees with speed " << angular_speed);
 
   double current_angle = 0;
   int t0 = ros::Time::now().sec;
+  ROS_INFO_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
 
-  while (current_angle < relative_angle) {
+  while (fabs(current_angle - relative_angle) > 0.05) {
     velocityPub.publish(vel);
     int t1 = ros::Time::now().sec;
-    current_angle = angular_speed * (t1 - t0);
+    current_angle = vel.angular.z * (t1 - t0);
+    ROS_INFO_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
+    ros::Duration(0.5).sleep();
   }
 }
 
 void PushExecutor::forward(float increment) {
   ROS_DEBUG_STREAM("moving forward by " << increment);
-
   geometry_msgs::Twist vel = zero_twist();
   vel.linear.x = increment;
   velocityPub.publish(vel);

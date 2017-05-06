@@ -72,7 +72,7 @@ geometry_msgs::Point getCentroid(double x, double y, double z) {
   return centroid;
 }
 
-double quaternionToZRotation(const geometry_msgs::Quaternion &q) {
+double quaternionToZAngle(const geometry_msgs::Quaternion &q) {
   double ysqr = q.y * q.y;
 
   // yaw (z-axis rotation)
@@ -215,7 +215,7 @@ TEST_F(ServiceTest, pushOrientationCorrectAlignedX) {
   // verify that the orientation is along the Y axis
   clutter_butter::GetPushPlan getPushPlanService;
   EXPECT_TRUE(getPushPlanClient.call(getPushPlanService));
-  double angle = quaternionToZRotation(getPushPlanService.response.plan.start.orientation);
+  double angle = quaternionToZAngle(getPushPlanService.response.plan.start.orientation);
 
   EXPECT_NEAR(-90.0, angle, 0.01) << "Angle of orientation not what was expected";
 }
@@ -230,7 +230,7 @@ TEST_F(ServiceTest, pushOrientationCorrectAlignedY) {
   // verify that the orientation is along the Y axis
   clutter_butter::GetPushPlan getPushPlanService;
   EXPECT_TRUE(getPushPlanClient.call(getPushPlanService));
-  double angle = quaternionToZRotation(getPushPlanService.response.plan.start.orientation);
+  double angle = quaternionToZAngle(getPushPlanService.response.plan.start.orientation);
 
   EXPECT_NEAR(180, angle, 0.01) << "Angle of orientation not what was expected";
 }

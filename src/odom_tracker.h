@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Brian Buxton <bbux10@gmail.com>
- * @brief push executor node header definitions
+ * @brief keeps track of odometry and serves it up with a service call
  * @copyright BSD License
  * Copyright (c) 2017 Brian Buxton
  * All rights reserved.
@@ -28,63 +28,26 @@
  * DAMAGE.
  */
 
-#ifndef PUSH_EXECUTOR_H_
-#define PUSH_EXECUTOR_H_
+#ifndef ODOM_TRACKER_H_
+#define ODOM_TRACKER_H_
 
 #include <vector>
-#include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Pose.h>
 #include <nav_msgs/Odometry.h>
-#include "clutter_butter/Target.h"
-#include "clutter_butter/GetPushPlan.h"
-#include "clutter_butter/SetPushExecutorState.h"
-#include "clutter_butter/GoTo.h"
-#include "clutter_butter/Orient.h"
+#include "clutter_butter/GetOdom.h"
 
 /**
  * Class for executing PushPlans
  */
-class PushExecutor {
+class OdomTracker {
  private:
   ros::NodeHandle n;
-  ros::ServiceServer setStateService;
-  ros::ServiceClient getPushPlanClient;
-  // publisher for velocity twist messages
-  ros::Publisher velocityPub;
+  ros::ServiceServer getOdomService;
   // subscriber for odometry, where are we now?
   ros::Subscriber odomSubscriber;
-  // state
-  int mode = clutter_butter::SetPushExecutorState::Request::STOPPED;
-  // location
+  // current location
   geometry_msgs::Pose location;
 
-  // internal methods
-  /**
-   * Executes the given plan
-   * @param plan to execute
-   */
-  void executePlan(clutter_butter::PushPlan plan);
-  /**
-   * Moves the robot to the location specified
-   * @param pose to move to
-   * @return if move was successful
-   */
-  bool goTo(geometry_msgs::Pose pose);
-
-  /**
-   * rotates the robot to the desire angle
-   * @param angle in degrees to orient to
-   */
-  void setOrientation(int angle);
-  /**
-   * sends velocity message to halt the robot in place
-   */
-  void stop();
-  /**
-   * sends velocity command to move forward by the provided increment
-   * @param increment
-   */
-  void forward(float increment);
   /**
    * handler for odom subscriber
    */
@@ -92,33 +55,22 @@ class PushExecutor {
 
  public:
   /**
-   * Construct and initialize the push_planner node
+   * Construct and initialize
    * @param nh the valid node handle for this node
    */
-  explicit PushExecutor(ros::NodeHandle nh);
+  explicit OdomTracker(ros::NodeHandle nh);
   /**
    * Destructor
    */
-  virtual ~PushExecutor();
+  virtual ~OdomTracker();
   /**
-   * Starts the node loop to listen for activation
+   * Starts the node loop
    */
   void spin();
-
   /**
-   * Service for setting the push executor state
+   * Service for get current odom
    */
-  bool setState(clutter_butter::SetPushExecutorStateRequest &req, clutter_butter::SetPushExecutorStateResponse &resp);
-
-  /**
-   * Service for go to service (debug mode only)
-   */
-  bool goToService(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp);
-
-  /**
-   * Service for orient service (debug mode only)
-   */
-  bool orientServide(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp);
+  bool getOdom(clutter_butter::GetOdom::Request &req, clutter_butter::GetOdom::Response &resp);
 };
 
-#endif  // PUSH_EXECUTOR_H_
+#endif  // ODOM_TRACKER_H_

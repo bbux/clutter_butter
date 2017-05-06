@@ -28,6 +28,9 @@ add_service_files(
 	NewTarget.srv
 	GetPushPlan.srv
 	ClearAll.srv
+	GoTo.srv
+	Orient.srv
+	GetOdom.srv
 )
 
 ## Needs to be declared be for catkin_package
@@ -79,6 +82,19 @@ target_link_libraries(
 )
 add_dependencies(
 	push_executor
+	${PROJECT_NAME}_generate_messages_cpp
+)
+
+add_executable(
+	odom_tracker 
+	src/odom_tracker.cpp
+)
+target_link_libraries(
+	odom_tracker
+	${catkin_LIBRARIES}
+)
+add_dependencies(
+	odom_tracker
 	${PROJECT_NAME}_generate_messages_cpp
 )
 

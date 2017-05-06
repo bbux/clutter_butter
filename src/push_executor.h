@@ -40,6 +40,8 @@
 #include "clutter_butter/SetPushExecutorState.h"
 #include "clutter_butter/GoTo.h"
 #include "clutter_butter/Orient.h"
+#include "clutter_butter/GetOdom.h"
+
 
 /**
  * Class for executing PushPlans
@@ -47,16 +49,17 @@
 class PushExecutor {
  private:
   ros::NodeHandle n;
+  // services
   ros::ServiceServer setStateService;
+  ros::ServiceServer goToService;
+  ros::ServiceServer orientService;
+  // service clients
   ros::ServiceClient getPushPlanClient;
+  ros::ServiceClient getOdomClient;
   // publisher for velocity twist messages
   ros::Publisher velocityPub;
-  // subscriber for odometry, where are we now?
-  ros::Subscriber odomSubscriber;
   // state
   int mode = clutter_butter::SetPushExecutorState::Request::STOPPED;
-  // location
-  geometry_msgs::Pose location;
 
   // internal methods
   /**
@@ -86,9 +89,9 @@ class PushExecutor {
    */
   void forward(float increment);
   /**
-   * handler for odom subscriber
+   * get current odom
    */
-  void handleOdom(nav_msgs::Odometry odom);
+  geometry_msgs::Pose getOdom();
 
  public:
   /**
@@ -113,12 +116,12 @@ class PushExecutor {
   /**
    * Service for go to service (debug mode only)
    */
-  bool goToService(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp);
+  bool goToServiceHandler(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp);
 
   /**
    * Service for orient service (debug mode only)
    */
-  bool orientServide(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp);
+  bool orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp);
 };
 
 #endif  // PUSH_EXECUTOR_H_

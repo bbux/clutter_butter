@@ -65,10 +65,12 @@ PushExecutor::PushExecutor(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
   setStateService = n.advertiseService("set_executor_state", &PushExecutor::setState, this);
+  goToService = n.advertiseService("executor_go_to", &PushExecutor::goToServiceHandler, this);
+  orientService = n.advertiseService("executor_set_orientation", &PushExecutor::orientServiceHandler, this);
   // create client to get push plans
   getPushPlanClient = n.serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
+  getOdomClient = n.serviceClient<clutter_butter::GetOdom>("get_odom");
   velocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
-  odomSubscriber = n.subscribe("odom", 10, &PushExecutor::handleOdom, this);
   int defaultMode = clutter_butter::SetPushExecutorState::Request::DEBUG;
   n.param<int>("start_mode", mode, defaultMode);
   ROS_INFO_STREAM("Starting in Mode: " << mode);
@@ -108,6 +110,15 @@ bool PushExecutor::setState(clutter_butter::SetPushExecutorStateRequest &req,
   return true;
 }
 
+bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp) {
+  return goTo(req.goal);
+}
+
+bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {
+  setOrientation(quaternionToZAngle(req.orientation));
+  return true;
+}
+
 void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
   ROS_INFO_STREAM("Executing plan for target with id: " << plan.target.id << "...");
   // go to start position, avoiding obstacles along the way
@@ -119,6 +130,7 @@ void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
 
 bool PushExecutor::goTo(geometry_msgs::Pose goal) {
   ROS_INFO_STREAM("Attempting to move to (" << goal.position.x << ", " << goal.position.y << ")");
+  geometry_msgs::Pose location = getOdom();
   // what is the angle difference between where we are now and where we want to go?
   double angle = angleDifference(location.position, goal.position);
   // how far are we from the goal
@@ -148,6 +160,7 @@ bool PushExecutor::goTo(geometry_msgs::Pose goal) {
 
 void PushExecutor::setOrientation(int desiredAngle) {
   geometry_msgs::Twist vel = zero_twist();
+  geometry_msgs::Pose location = getOdom();
 
   // arbitrarily picked speed
   double angular_speed = 50 * 2 * M_PI / 360.0;
@@ -155,7 +168,6 @@ void PushExecutor::setOrientation(int desiredAngle) {
   ROS_INFO_STREAM("Attempting to orient to " << desiredAngle << " degrees");
 
   double currentAngle = quaternionToZAngle(location.orientation);
-//  ROS_INFO_STREAM("Current angle " << currentAngle << " degrees");
 
   int t0 = ros::Time::now().sec;
   double delta = fabs(currentAngle - desiredAngle);
@@ -191,18 +203,10 @@ void PushExecutor::stop() {
   velocityPub.publish(vel);
 }
 
-void PushExecutor::handleOdom(nav_msgs::Odometry odom) {
-  location.orientation.w = odom.pose.pose.orientation.w;
-  location.orientation.x = odom.pose.pose.orientation.x;
-  location.orientation.y = odom.pose.pose.orientation.y;
-  location.orientation.z = odom.pose.pose.orientation.z;
-
-  double currentAngle = quaternionToZAngle(location.orientation);
-  ROS_INFO_STREAM("Odom angle " << currentAngle << " degrees");
-
-  location.position.x = odom.pose.pose.position.x;
-  location.position.y = odom.pose.pose.position.y;
-  location.position.z = odom.pose.pose.position.z;
+geometry_msgs::Pose PushExecutor::getOdom() {
+  clutter_butter::GetOdom srv;
+  getOdomClient.call(srv);
+  return srv.response.pose;
 }
 
 int main(int argc, char **argv) {

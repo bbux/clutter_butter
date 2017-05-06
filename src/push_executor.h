@@ -69,16 +69,23 @@ class PushExecutor {
   void executePlan(clutter_butter::PushPlan plan);
   /**
    * Moves the robot to the location specified
-   * @param pose to move to
+   * @param point to move to
+   * @angle to orient to
    * @return if move was successful
    */
-  bool goTo(geometry_msgs::Pose pose);
+  bool goTo(geometry_msgs::Point goal, double angle);
 
   /**
    * rotates the robot to the desire angle
    * @param angle in degrees to orient to
    */
   void setOrientation(int angle);
+  /**
+   *  sends velocity message to rotate desired degrees
+   *  @param angle to rotate
+   *  @param speed to rotate by
+   */
+  void rotateNDegrees(int angle, double speed);
   /**
    * sends velocity message to halt the robot in place
    */

@@ -61,6 +61,22 @@ double quaternionToZAngle(const geometry_msgs::Quaternion &q) {
   return yaw * 180.0 / M_PI;
 }
 
+void setOrientationFromAngle(geometry_msgs::Quaternion &q, double zDegrees) {
+  double zRadians = M_PI * zDegrees / 180.0;
+  double t0 = std::cos(zRadians * 0.5);
+  double t1 = std::sin(zRadians * 0.5);
+  double t2 = std::cos(0 * 0.5);
+  double t3 = std::sin(0 * 0.5);
+  double t4 = std::cos(0 * 0.5);
+  double t5 = std::sin(0 * 0.5);
+
+  q.w = t0 * t2 * t4 + t1 * t3 * t5;
+  q.z = t1 * t2 * t4 - t0 * t3 * t5;
+  // these should be zero
+  q.x = t0 * t3 * t4 - t1 * t2 * t5;
+  q.y = t0 * t2 * t5 + t1 * t3 * t4;
+}
+
 PushExecutor::PushExecutor(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
@@ -111,7 +127,8 @@ bool PushExecutor::setState(clutter_butter::SetPushExecutorStateRequest &req,
 }
 
 bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp) {
-  int distance = goTo(req.goal);
+  ROS_INFO_STREAM("Go To Request: " << req);
+  int distance = goTo(req.goal, req.angleDegrees);
   resp.distance = distance;
   return (distance > 0);
 }
@@ -124,72 +141,82 @@ bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clut
 void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
   ROS_INFO_STREAM("Executing plan for target with id: " << plan.target.id << "...");
   // go to start position, avoiding obstacles along the way
-  goTo(plan.start);
+  goTo(plan.start.position, quaternionToZAngle(plan.start.orientation));
   // push target keeping track of centroid, and sending this to target update service
 
   // if off track, abandon this plan and request a new one
 }
 
-bool PushExecutor::goTo(geometry_msgs::Pose goal) {
-  ROS_INFO_STREAM("Attempting to move to (" << goal.position.x << ", " << goal.position.y << ")");
+bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
+  ROS_INFO_STREAM("Attempting to move to (" << goal.x << ", " << goal.y << "), angle: " << desiredAngle);
   geometry_msgs::Pose location = getOdom();
   // what is the angle difference between where we are now and where we want to go?
-  double angle = angleDifference(location.position, goal.position);
+  double angleToGoal = angleDifference(location.position, goal);
   // how far are we from the goal
-  double distance = calculateDistance(location.position, goal.position);
+  double distance = calculateDistance(location.position, goal);
+  ROS_INFO_STREAM("Goal is distance: " << distance << " at angle " << angleToGoal);
+
   // first align our orientation to point to the goal
-  setOrientation(angle);
+  setOrientation(angleToGoal);
   int count = 0;
   double speed = 0.5;
-  int t0 = ros::Time::now().sec;
   while(distance > 0.1) {
-    forward(speed);
-    int t1 = ros::Time::now().sec;
-    distance = (t1 - t0) * speed;
+    distance = calculateDistance(getOdom().position, goal);
+    ROS_INFO_STREAM("Current distance: " << distance);
     count++;
-    if (count > 1000) {
+    if (count > 100) {
       ROS_WARN_STREAM("Don't seem to be making progress towards goal after " << count << " iterations");
       return distance;
     }
   }
-  ROS_INFO_STREAM("We made it to the goal!");
-
-  double desiredAngle = quaternionToZAngle(goal.orientation);
+  ROS_INFO_STREAM("We made it to the goal! Setting orientation to: " << desiredAngle);
   setOrientation(desiredAngle);
 
   location = getOdom();
-  return calculateDistance(location.position, goal.position);;
+  return calculateDistance(location.position, goal);
 }
 
 void PushExecutor::setOrientation(int desiredAngle) {
-  geometry_msgs::Twist vel = zero_twist();
-  geometry_msgs::Pose location = getOdom();
-
-  // arbitrarily picked speed
-  double angular_speed = 50 * 2 * M_PI / 360.0;
-  vel.angular.z = angular_speed;
   ROS_INFO_STREAM("Attempting to orient to " << desiredAngle << " degrees");
 
+  geometry_msgs::Pose location = getOdom();
   double currentAngle = quaternionToZAngle(location.orientation);
 
-  int t0 = ros::Time::now().sec;
-  double delta = fabs(currentAngle - desiredAngle);
+  double delta = desiredAngle - currentAngle;
 
   while (delta > 0.01) {
     ROS_INFO_STREAM("Angle delta: " << delta << " degrees");
+    if (fabs(delta) > 20) {
+      rotateNDegrees(delta, 20);
+    // slow down a little
+    } else if (fabs(delta) < 20 && fabs(delta) > 5) {
+      rotateNDegrees(delta, 5);
+    // slow down a lot
+    } else {
+      rotateNDegrees(delta, 1);
+    }
+    currentAngle = quaternionToZAngle(getOdom().orientation);
+    delta = desiredAngle - currentAngle;
+    // TODO: Delete this!!!!
+    ros::Duration(1).sleep();
+  }
+}
+
+void PushExecutor::rotateNDegrees(int angle, double speed) {
+  geometry_msgs::Twist vel = zero_twist();
+
+  double angular_speed = speed * 2 * M_PI / 360.0;
+  double relative_angle = angle * 2 * M_PI / 360.0;
+  vel.angular.z = angular_speed;
+  ROS_DEBUG_STREAM("Attempting to rotate " << angle << " degrees with speed " << angular_speed);
+
+  double current_angle = 0;
+  int t0 = ros::Time::now().sec;
+
+  while (current_angle < relative_angle) {
     velocityPub.publish(vel);
     int t1 = ros::Time::now().sec;
-    currentAngle = angular_speed * (t1 - t0) * M_PI / 180.0;
-    ROS_INFO_STREAM("Current angle " << currentAngle << " degrees");
-    delta = fabs(currentAngle - desiredAngle);
-    // slow down a little
-    if (delta < 20) {
-      angular_speed = 20 * 2 * M_PI / 360.0;
-    // slow down a lot
-    } else if (delta < 5) {
-      angular_speed = 2 * 2 * M_PI / 360.0;
-    }
-    ros::Duration(10).sleep();
+    current_angle = angular_speed * (t1 - t0);
   }
 }
 

@@ -111,7 +111,9 @@ bool PushExecutor::setState(clutter_butter::SetPushExecutorStateRequest &req,
 }
 
 bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp) {
-  return goTo(req.goal);
+  int distance = goTo(req.goal);
+  resp.distance = distance;
+  return (distance > 0);
 }
 
 bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {
@@ -147,7 +149,7 @@ bool PushExecutor::goTo(geometry_msgs::Pose goal) {
     count++;
     if (count > 1000) {
       ROS_WARN_STREAM("Don't seem to be making progress towards goal after " << count << " iterations");
-      return false;
+      return distance;
     }
   }
   ROS_INFO_STREAM("We made it to the goal!");
@@ -155,7 +157,8 @@ bool PushExecutor::goTo(geometry_msgs::Pose goal) {
   double desiredAngle = quaternionToZAngle(goal.orientation);
   setOrientation(desiredAngle);
 
-  return true;
+  location = getOdom();
+  return calculateDistance(location.position, goal.position);;
 }
 
 void PushExecutor::setOrientation(int desiredAngle) {

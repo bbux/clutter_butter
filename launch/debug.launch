@@ -4,7 +4,9 @@
   <arg name="include_gazebo" default="0" />
 
   <group if="$(arg include_gazebo)">
-    <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch" />
+    <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch">
+       <arg name="world_file" value="/home/viki/catkin_ws/src/clutter_butter/worlds/walled_empty.world.xml" />
+    </include>
   </group>
 
   <!-- Odom Node -->

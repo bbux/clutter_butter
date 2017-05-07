@@ -44,9 +44,7 @@ geometry_msgs::Twist zero_twist() {
 }
 
 double angleDifference(geometry_msgs::Point start, geometry_msgs::Point goal) {
-  // the coordinates systems are shifted by 90 degrees, from what odom tells us
-  // thus add the 90 to the calculation
-  return (M_PI * atan2(goal.y - start.y, goal.x - start.x) / 180.0) + 90.0;
+  return (180.0 * atan2(goal.y - start.y, goal.x - start.x) / M_PI);
 }
 
 double calculateDistance(geometry_msgs::Point start, geometry_msgs::Point goal) {
@@ -153,11 +151,13 @@ void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
 bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   ROS_INFO_STREAM("Attempting to move to (" << goal.x << ", " << goal.y << "), angle: " << desiredAngle);
   geometry_msgs::Pose location = getOdom();
+  ROS_INFO_STREAM("Current position (" << location.position.x << ", " << location.position.y << "), angle: " << quaternionToZAngle(location.orientation));
+
   // what is the angle difference between where we are now and where we want to go?
   double angleToGoal = angleDifference(location.position, goal);
   // how far are we from the goal
   double distance = calculateDistance(location.position, goal);
-  ROS_DEBUG_STREAM("Goal is distance: " << distance << " at angle " << angleToGoal);
+  ROS_INFO_STREAM("Goal is distance: " << distance << " at angle " << angleToGoal);
 
   // first align our orientation to point to the goal
   setOrientation(angleToGoal);
@@ -272,7 +272,7 @@ void PushExecutor::forward(float distance) {
   int t0 = ros::Time::now().sec;
   double traveled = 0;
   while (traveled < distance) {
-    ROS_DEBUG_STREAM("traveled: " << traveled << " going: " << distance);
+    ROS_INFO_STREAM("traveled: " << traveled << " going: " << distance);
     velocityPub.publish(vel);
     // add a little delay to may transitions more smooth
     ros::Duration(0.2).sleep();

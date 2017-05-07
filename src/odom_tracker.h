@@ -35,6 +35,7 @@
 #include <geometry_msgs/Pose.h>
 #include <nav_msgs/Odometry.h>
 #include "clutter_butter/GetOdom.h"
+#include "clutter_butter/GetOdomPretty.h"
 
 /**
  * Class for executing PushPlans
@@ -43,6 +44,7 @@ class OdomTracker {
  private:
   ros::NodeHandle n;
   ros::ServiceServer getOdomService;
+  ros::ServiceServer getOdomPrettyService;
   // subscriber for odometry, where are we now?
   ros::Subscriber odomSubscriber;
   // current location
@@ -71,6 +73,11 @@ class OdomTracker {
    * Service for get current odom
    */
   bool getOdom(clutter_butter::GetOdom::Request &req, clutter_butter::GetOdom::Response &resp);
+
+  /**
+   * Service for get current odom in more readable format
+   */
+  bool getOdomPretty(clutter_butter::GetOdomPretty::Request &req, clutter_butter::GetOdomPretty::Response &resp);
 };
 
 #endif  // ODOM_TRACKER_H_

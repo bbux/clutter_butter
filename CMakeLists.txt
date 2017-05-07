@@ -31,6 +31,7 @@ add_service_files(
 	GoTo.srv
 	Orient.srv
 	GetOdom.srv
+	GetOdomPretty.srv
 )
 
 ## Needs to be declared be for catkin_package

@@ -44,7 +44,9 @@ geometry_msgs::Twist zero_twist() {
 }
 
 double angleDifference(geometry_msgs::Point start, geometry_msgs::Point goal) {
-  return M_PI * atan2(goal.y - start.y, goal.x - start.x) / 180.0;
+  // the coordinates systems are shifted by 90 degrees, from what odom tells us
+  // thus add the 90 to the calculation
+  return (M_PI * atan2(goal.y - start.y, goal.x - start.x) / 180.0) + 90.0;
 }
 
 double calculateDistance(geometry_msgs::Point start, geometry_msgs::Point goal) {
@@ -155,27 +157,30 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   double angleToGoal = angleDifference(location.position, goal);
   // how far are we from the goal
   double distance = calculateDistance(location.position, goal);
-  ROS_INFO_STREAM("Goal is distance: " << distance << " at angle " << angleToGoal);
+  ROS_DEBUG_STREAM("Goal is distance: " << distance << " at angle " << angleToGoal);
 
   // first align our orientation to point to the goal
   setOrientation(angleToGoal);
-  int count = 0;
+  ROS_DEBUG_STREAM("Oriented toward goal...");
+  int count = 1;
   while(distance > 0.1) {
+    ROS_DEBUG_STREAM("forward iteration : " << count << " distance traveling: " << (distance/2) );
     forward(distance/2);
+    stop();
     // re adjust
     location = getOdom();
     distance = calculateDistance(location.position, goal);
     //angleToGoal = angleDifference(location.position, goal);
     //setOrientation(angleToGoal);
 
-    ROS_INFO_STREAM("Current distance: " << distance);
+    ROS_DEBUG_STREAM("Current distance: " << distance);
     count++;
-    if (count > 100) {
+    if (count >= 100) {
       ROS_WARN_STREAM("Don't seem to be making progress towards goal after " << count << " iterations");
       return distance;
     }
   }
-  ROS_INFO_STREAM("We made it to the goal! Setting orientation to: " << desiredAngle);
+  ROS_DEBUG_STREAM("We made it to the goal! Setting orientation to: " << desiredAngle);
   setOrientation(desiredAngle);
 
   location = getOdom();
@@ -197,7 +202,7 @@ void PushExecutor::setOrientation(double desiredAngle) {
   // if can't rotate any more, no need to keep trying
   bool rotated = true;
   while (fabs(delta) > 0.25 && rotated) {
-    ROS_INFO_STREAM("Angle delta: " << delta << " degrees");
+    ROS_DEBUG_STREAM("Angle delta: " << delta << " degrees");
     if (fabs(delta) > 20) {
       rotated = rotateNDegrees(delta/2, 20);
     // slow down a little
@@ -260,11 +265,20 @@ bool PushExecutor::rotateNDegrees(double angle, double speed) {
   return true;
 }
 
-void PushExecutor::forward(float increment) {
-  ROS_DEBUG_STREAM("moving forward by " << increment);
+void PushExecutor::forward(float distance) {
+  ROS_DEBUG_STREAM("moving forward by " << distance);
   geometry_msgs::Twist vel = zero_twist();
-  vel.linear.x = increment;
-  velocityPub.publish(vel);
+  vel.linear.x = 0.05;
+  int t0 = ros::Time::now().sec;
+  double traveled = 0;
+  while (traveled < distance) {
+    ROS_DEBUG_STREAM("traveled: " << traveled << " going: " << distance);
+    velocityPub.publish(vel);
+    // add a little delay to may transitions more smooth
+    ros::Duration(0.2).sleep();
+    int t1 = ros::Time::now().sec;
+    traveled = vel.linear.x * (t1 - t0);
+  }
 }
 
 void PushExecutor::stop() {

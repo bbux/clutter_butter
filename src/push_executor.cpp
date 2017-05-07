@@ -29,6 +29,7 @@
  */
 #include "ros/ros.h"
 #include "push_executor.h"
+#include <math.h>
 #include "clutter_butter/SetPushExecutorState.h"
 
 geometry_msgs::Twist zero_twist() {
@@ -182,58 +183,81 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
 }
 
 void PushExecutor::setOrientation(double desiredAngle) {
-  ROS_INFO_STREAM("Attempting to orient to " << desiredAngle << " degrees");
+  ROS_DEBUG_STREAM("Attempting to orient to " << desiredAngle << " degrees");
 
   geometry_msgs::Pose location = getOdom();
   double currentAngle = quaternionToZAngle(location.orientation);
-  ROS_INFO_STREAM("Current angle: " << currentAngle << " desired: " << desiredAngle);
+  ROS_DEBUG_STREAM("Current angle: " << currentAngle << " desired: " << desiredAngle);
 
-  double delta = desiredAngle - currentAngle;
+  double rightDelta = fmod((currentAngle + 360.0 - desiredAngle), 360.0);
+  double leftDelta = fmod((360.0 - currentAngle + desiredAngle), 360.0);
+  // subtlety that we are negating rightDelta
+  double delta = (rightDelta < leftDelta) ? -rightDelta : leftDelta;
 
-  while (fabs(delta) > 0.05) {
+  // if can't rotate any more, no need to keep trying
+  bool rotated = true;
+  while (fabs(delta) > 0.25 && rotated) {
     ROS_INFO_STREAM("Angle delta: " << delta << " degrees");
     if (fabs(delta) > 20) {
-      rotateNDegrees(delta/2, 20);
+      rotated = rotateNDegrees(delta/2, 20);
     // slow down a little
     } else if (fabs(delta) < 20 && fabs(delta) > 5) {
-      rotateNDegrees(delta/2, 5);
+      rotated = rotateNDegrees(delta/2, 5);
     // slow down a lot
     } else {
-      rotateNDegrees(delta/2, 1);
+      rotated = rotateNDegrees(delta/2, 1);
     }
+    // if can't rotate, break
     currentAngle = quaternionToZAngle(getOdom().orientation);
-    delta = desiredAngle - currentAngle;
-    // give things time to adjust
-    //ros::Duration(0.5).sleep();
+    rightDelta = fmod((currentAngle + 360.0 - desiredAngle), 360.0);
+    leftDelta = fmod((360.0 - currentAngle + desiredAngle), 360.0);
+    // subtlety that we are negating rightDelta
+    delta = (rightDelta < leftDelta) ? -rightDelta : leftDelta;
   }
 
-  ROS_INFO_STREAM("Final angle " << currentAngle << " degrees");
+  ROS_DEBUG_STREAM("Final angle " << currentAngle << " degrees");
 
 }
 
-void PushExecutor::rotateNDegrees(double angle, double speed) {
+bool PushExecutor::rotateNDegrees(double angle, double speed) {
   geometry_msgs::Twist vel = zero_twist();
 
   double angular_speed = speed * 2 * M_PI / 360.0;
   double relative_angle = angle * 2 * M_PI / 360.0;
-  if (angle > 0) {
+  // asking to rotate less than minimum tolerance
+  if (fabs(relative_angle) < 0.00872665) {
+    return false;
+  }
+  bool rotateLeft = (angle > 0);
+  if (rotateLeft) {
     vel.angular.z = angular_speed;
   } else {
     vel.angular.z = -angular_speed;
   }
-  ROS_INFO_STREAM("Attempting to rotate " << angle << " degrees with speed " << angular_speed);
+  ROS_DEBUG_STREAM("Attempting to rotate " << angle << " degrees with speed " << angular_speed);
 
   double current_angle = 0;
   int t0 = ros::Time::now().sec;
   ROS_INFO_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
 
-  while (fabs(current_angle - relative_angle) > 0.05) {
+  while (fabs(current_angle - relative_angle) > 0.00872665) {
     velocityPub.publish(vel);
     int t1 = ros::Time::now().sec;
     current_angle = vel.angular.z * (t1 - t0);
-    ROS_INFO_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
+    ROS_DEBUG_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
+
+    // check if we have gone past our desired angle
+    if (rotateLeft && (current_angle > relative_angle)) {
+      ROS_DEBUG_STREAM("Woops went too far left breaking out of rotation");
+      break;
+    } else if (!rotateLeft && current_angle < relative_angle) {
+      ROS_DEBUG_STREAM("Woops went too far right breaking out of rotation");
+      break;
+    }
+    // add a little delay to may transitions more smooth
     ros::Duration(0.5).sleep();
   }
+  return true;
 }
 
 void PushExecutor::forward(float increment) {

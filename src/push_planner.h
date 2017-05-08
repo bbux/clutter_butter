@@ -63,7 +63,7 @@ class PushPlanner {
   // offset from target to start from
   double offset = 0.0;
   // minimum distance from target
-  double minimumDistance = 1.0;
+  double minimumDistance = 0.25;
 
   // internal methods
   /**

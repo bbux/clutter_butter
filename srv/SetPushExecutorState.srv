@@ -1,8 +1,9 @@
 uint8 STOPPED = 0
-uint8 PUSHING  = 1
-uint8 DEBUG  = 2
+uint8 READY  = 1
+uint8 PUSHING  = 2
+uint8 DEBUG  = 3
 
-# walking the map or not
+# what are we doing now?
 uint8 state
 
 ---

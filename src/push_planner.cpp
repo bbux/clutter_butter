@@ -39,12 +39,12 @@ PushPlanner::PushPlanner(ros::NodeHandle nh) {
   getPushPlanService = n.advertiseService("get_push_plan", &PushPlanner::getPushPlan, this);
   clearAllService = n.advertiseService("clear_push_planner", &PushPlanner::clearAll, this);
   // initialize jail
-  n.param<double>("jail_x", jail.x, 0.0);
+  n.param<double>("jail_x", jail.x, 2.0);
   n.param<double>("jail_y", jail.y, 0.0);
   n.param<double>("jail_z", jail.z, 0.0);
 
   // get initial offset
-  n.param<double>("offset", offset, 1.0);
+  n.param<double>("offset", offset, 0.25);
   // set reasonable min dist
   double offset_dist = sqrt(pow(offset, 2) + pow(offset, 2));
   if (offset_dist < 2) {
@@ -77,10 +77,11 @@ void PushPlanner::spin() {
 }
 
 bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp) {
+  ROS_INFO_STREAM("Request to add target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ")");
   // is it already in jail?
   double dist = distance(req.centroid, jail);
   if (dist < minimumDistance) {
-    ROS_DEBUG_STREAM("Target at centroid: (" << req.centroid.x << ", " << req.centroid.y << ") already in jail");
+    ROS_WARN_STREAM("Target at (" << req.centroid.x << ", " << req.centroid.y << ") " << dist << " from jail, min dist is " << minimumDistance);
     return false;
   }
   // is it already known?

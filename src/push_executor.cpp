@@ -88,7 +88,7 @@ PushExecutor::PushExecutor(ros::NodeHandle nh) {
   getPushPlanClient = n.serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
   getOdomClient = n.serviceClient<clutter_butter::GetOdom>("get_odom");
   velocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
-  int defaultMode = clutter_butter::SetPushExecutorState::Request::DEBUG;
+  int defaultMode = clutter_butter::SetPushExecutorState::Request::STOPPED;
   n.param<int>("start_mode", mode, defaultMode);
   ROS_INFO_STREAM("Starting in Mode: " << mode);
 }
@@ -102,7 +102,8 @@ void PushExecutor::spin() {
 
   while (ros::ok()) {
     // any plans to execute
-    if (mode == clutter_butter::SetPushExecutorState::Request::PUSHING) {
+    if (mode == clutter_butter::SetPushExecutorState::Request::READY) {
+      mode = clutter_butter::SetPushExecutorState::Request::PUSHING;
       ROS_DEBUG_STREAM("Were active, time to push stuff...");
       clutter_butter::GetPushPlan getPushPlanService;
       bool hasPlan = getPushPlanClient.call(getPushPlanService);
@@ -144,7 +145,7 @@ void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
   // go to start position, avoiding obstacles along the way
   goTo(plan.start.position, quaternionToZAngle(plan.start.orientation));
   // push target keeping track of centroid, and sending this to target update service
-
+  goTo(plan.goal.position, quaternionToZAngle(plan.goal.orientation));
   // if off track, abandon this plan and request a new one
 }
 
@@ -268,14 +269,14 @@ bool PushExecutor::rotateNDegrees(double angle, double speed) {
 void PushExecutor::forward(float distance) {
   ROS_DEBUG_STREAM("moving forward by " << distance);
   geometry_msgs::Twist vel = zero_twist();
-  vel.linear.x = 0.05;
+  vel.linear.x = 0.1;
   int t0 = ros::Time::now().sec;
   double traveled = 0;
   while (traveled < distance) {
-    ROS_INFO_STREAM("traveled: " << traveled << " going: " << distance);
+    ROS_DEBUG_STREAM("traveled: " << traveled << " going: " << distance);
     velocityPub.publish(vel);
     // add a little delay to may transitions more smooth
-    ros::Duration(0.2).sleep();
+    ros::Duration(0.1).sleep();
     int t1 = ros::Time::now().sec;
     traveled = vel.linear.x * (t1 - t0);
   }

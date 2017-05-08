@@ -23,7 +23,7 @@ add_message_files(
 
 add_service_files(
 	FILES
-	SetMapWalkerState.srv
+	SetObstacleDetectorState.srv
 	SetPushExecutorState.srv
 	NewTarget.srv
 	GetPushPlan.srv
@@ -96,6 +96,19 @@ target_link_libraries(
 )
 add_dependencies(
 	odom_tracker
+	${PROJECT_NAME}_generate_messages_cpp
+)
+
+add_executable(
+	obstacle_detector 
+	src/obstacle_detector.cpp
+)
+target_link_libraries(
+	obstacle_detector
+	${catkin_LIBRARIES}
+)
+add_dependencies(
+	obstacle_detector
 	${PROJECT_NAME}_generate_messages_cpp
 )
 

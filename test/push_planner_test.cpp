@@ -107,7 +107,7 @@ TEST_F(ServiceTest, addSingleTarget) {
 
 TEST_F(ServiceTest, targetIsAlreadyInJail) {
   clutter_butter::NewTarget srv1;
-  geometry_msgs::Point centroid = getCentroid(0.1, 0.1, 0.0);
+  geometry_msgs::Point centroid = getCentroid(2.1, 0.1, 0.0);
   srv1.request.centroid = centroid;
 
   bool added = addNewTargetClient.call(srv1);
@@ -139,20 +139,20 @@ TEST_F(ServiceTest, straitLineFromTargetToJail) {
   clutter_butter::NewTarget srv1;
   geometry_msgs::Point centroid = getCentroid(4.0, 0.0, 0.0);
   srv1.request.centroid = centroid;
-  double offset = 1.0;
+  double offset = 0.25;
 
   addNewTargetClient.call(srv1);
 
   clutter_butter::GetPushPlan srv2;
   getPushPlanClient.call(srv2);
-  EXPECT_EQ(clutter_butter::GetPushPlan::Request::VALID, srv2.response.isvalid);
+  EXPECT_TRUE(srv2.response.isvalid);
 
   // expect start to be offset by a little from center of target
   EXPECT_EQ(centroid.x + offset, srv2.response.plan.start.position.x);
   EXPECT_EQ(centroid.y, srv2.response.plan.start.position.y);
   EXPECT_EQ(centroid.z, srv2.response.plan.start.position.z);
   // destinatioin is jail
-  EXPECT_EQ(0.0, srv2.response.plan.goal.position.x);
+  EXPECT_EQ(2.0, srv2.response.plan.goal.position.x);
   EXPECT_EQ(0.0, srv2.response.plan.goal.position.y);
   EXPECT_EQ(0.0, srv2.response.plan.goal.position.z);
 }
@@ -217,7 +217,7 @@ TEST_F(ServiceTest, pushOrientationCorrectAlignedX) {
   EXPECT_TRUE(getPushPlanClient.call(getPushPlanService));
   double angle = quaternionToZAngle(getPushPlanService.response.plan.start.orientation);
 
-  EXPECT_NEAR(-90.0, angle, 0.01) << "Angle of orientation not what was expected";
+  EXPECT_NEAR(180, angle, 0.01) << "Angle of orientation not what was expected";
 }
 
 TEST_F(ServiceTest, pushOrientationCorrectAlignedY) {

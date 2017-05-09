@@ -148,7 +148,7 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
     }
     resp.plan = getPushPlanForTarget(id);
     ROS_DEBUG_STREAM("Found Push Plan with target id: " << resp.plan.target.id);
-    resp.isvalid = 1;
+    resp.isvalid = true;
     return true;
   } else {
     ROS_INFO_STREAM("Requested Push Plan, but none exists...");

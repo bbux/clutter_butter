@@ -1,7 +1,4 @@
 ---
-uint8 EMPTY = 0
-uint8 VALID = 1
-
-uint8 isvalid
+bool isvalid
 # the next available push plan if any are available
 PushPlan plan

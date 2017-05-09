@@ -58,7 +58,6 @@ class PushExecutor {
   ros::ServiceClient getPushPlanClient;
   ros::ServiceClient updateTargetClient;
   ros::ServiceClient getOdomClient;
-  ros::ServiceClient setObstacleDetectionClient;
   // publisher for velocity twist messages
   ros::Publisher velocityPub;
   // state

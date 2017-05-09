@@ -90,7 +90,6 @@ PushExecutor::PushExecutor(ros::NodeHandle nh) {
   getPushPlanClient = n.serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
   updateTargetClient = n.serviceClient<clutter_butter::UpdateTarget>("update_target");
   getOdomClient = n.serviceClient<clutter_butter::GetOdom>("get_odom");
-  setObstacleDetectionClient = n.serviceClient<clutter_butter::SetObstacleDetectorState>("set_obstacle_detector_state");
   velocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
   int defaultMode = clutter_butter::SetPushExecutorState::Request::STOPPED;
   n.param<int>("start_mode", mode, defaultMode);

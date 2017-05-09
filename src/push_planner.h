@@ -36,6 +36,7 @@
 #include <geometry_msgs/Point.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/NewTarget.h"
+#include "clutter_butter/UpdateTarget.h"
 #include "clutter_butter/GetPushPlan.h"
 #include "clutter_butter/ClearAll.h"
 
@@ -51,6 +52,7 @@ class PushPlanner {
   // location of the Jail relative to the world frame
   geometry_msgs::Point jail;
   ros::ServiceServer addTargetService;
+  ros::ServiceServer updateTargetService;
   ros::ServiceServer getPushPlanService;
   ros::ServiceServer clearAllService;
 
@@ -125,6 +127,11 @@ class PushPlanner {
    * Service for adding a new target
    */
   bool addTarget(clutter_butter::NewTargetRequest &req, clutter_butter::NewTargetResponse &resp);
+
+  /**
+   * Service for updating an existing target
+   */
+  bool updateTarget(clutter_butter::UpdateTargetRequest &req, clutter_butter::UpdateTargetResponse &resp);
   /**
    * Service for getting a push plan, if any are available
    */

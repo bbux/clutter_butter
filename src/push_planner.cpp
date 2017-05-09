@@ -36,6 +36,7 @@ PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
   addTargetService = n.advertiseService("add_target", &PushPlanner::addTarget, this);
+  updateTargetService = n.advertiseService("update_target",  &PushPlanner::updateTarget, this);
   getPushPlanService = n.advertiseService("get_push_plan", &PushPlanner::getPushPlan, this);
   clearAllService = n.advertiseService("clear_push_planner", &PushPlanner::clearAll, this);
   // initialize jail
@@ -98,6 +99,24 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
   return true;
 }
 
+bool PushPlanner::updateTarget(clutter_butter::UpdateTargetRequest &req, clutter_butter::UpdateTargetResponse &resp) {
+  if (req.action == clutter_butter::UpdateTarget::Request::JAILED) {
+    for (std::vector<clutter_butter::PushPlan>::iterator it = plans.begin(); it != plans.end(); ++it)
+    {
+      clutter_butter::PushPlan &plan = *it;
+      if (plan.target.id == req.target.id) {
+        ROS_INFO_STREAM("Setting Target with ID: " << plan.target.id << " To JAILED");
+        plan.jailed = true;
+        break;
+      }
+    }
+  } else {
+    // they moved it
+    // TODO: figure this out
+  }
+  return true;
+}
+
 clutter_butter::PushPlan PushPlanner::getPushPlanForTarget(int id) {
   for (clutter_butter::PushPlan plan : plans) {
     if (plan.target.id == id) {
@@ -114,6 +133,11 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
     int id = plans.front().target.id;
     double shortestDistance = 1000000;
     for (clutter_butter::PushPlan plan : plans) {
+      ROS_INFO_STREAM("Plan: " << plan.target.id << ", Jailed: " << (plan.jailed == true));
+      // skip jailed plans
+      if (plan.jailed == true) {
+        continue;
+      }
       double dist = distance(plan.target.centroid, jail);
       ROS_DEBUG_STREAM("Distance for " << plan.target.id << " is " << dist);
       if (dist < shortestDistance) {
@@ -178,6 +202,7 @@ clutter_butter::Target PushPlanner::createTarget(geometry_msgs::Point centroid) 
 
 clutter_butter::PushPlan PushPlanner::createPushPlan(clutter_butter::Target target) {
   clutter_butter::PushPlan plan;
+  plan.jailed = false;
   geometry_msgs::Pose start;
   geometry_msgs::Point startpos;
   geometry_msgs::Quaternion startOrientation;

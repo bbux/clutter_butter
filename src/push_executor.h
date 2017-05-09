@@ -37,6 +37,7 @@
 #include <nav_msgs/Odometry.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/GetPushPlan.h"
+#include "clutter_butter/UpdateTarget.h"
 #include "clutter_butter/SetPushExecutorState.h"
 #include "clutter_butter/GoTo.h"
 #include "clutter_butter/Orient.h"
@@ -55,7 +56,9 @@ class PushExecutor {
   ros::ServiceServer orientService;
   // service clients
   ros::ServiceClient getPushPlanClient;
+  ros::ServiceClient updateTargetClient;
   ros::ServiceClient getOdomClient;
+  ros::ServiceClient setObstacleDetectionClient;
   // publisher for velocity twist messages
   ros::Publisher velocityPub;
   // state

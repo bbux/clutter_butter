@@ -26,6 +26,7 @@ add_service_files(
 	SetObstacleDetectorState.srv
 	SetPushExecutorState.srv
 	NewTarget.srv
+	UpdateTarget.srv
 	GetPushPlan.srv
 	ClearAll.srv
 	GoTo.srv

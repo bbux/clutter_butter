@@ -31,6 +31,8 @@
 #include "push_executor.h"
 #include <math.h>
 #include "clutter_butter/SetPushExecutorState.h"
+#include "clutter_butter/SetObstacleDetectorState.h"
+#include "clutter_butter/UpdateTarget.h"
 
 geometry_msgs::Twist zero_twist() {
   geometry_msgs::Twist vel;
@@ -86,7 +88,9 @@ PushExecutor::PushExecutor(ros::NodeHandle nh) {
   orientService = n.advertiseService("executor_set_orientation", &PushExecutor::orientServiceHandler, this);
   // create client to get push plans
   getPushPlanClient = n.serviceClient<clutter_butter::GetPushPlan>("get_push_plan");
+  updateTargetClient = n.serviceClient<clutter_butter::UpdateTarget>("update_target");
   getOdomClient = n.serviceClient<clutter_butter::GetOdom>("get_odom");
+  setObstacleDetectionClient = n.serviceClient<clutter_butter::SetObstacleDetectorState>("set_obstacle_detector_state");
   velocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
   int defaultMode = clutter_butter::SetPushExecutorState::Request::STOPPED;
   n.param<int>("start_mode", mode, defaultMode);
@@ -104,13 +108,13 @@ void PushExecutor::spin() {
     // any plans to execute
     if (mode == clutter_butter::SetPushExecutorState::Request::READY) {
       mode = clutter_butter::SetPushExecutorState::Request::PUSHING;
-      ROS_DEBUG_STREAM("Were active, time to push stuff...");
+      ROS_INFO_STREAM("Were active, time to push stuff...");
       clutter_butter::GetPushPlan getPushPlanService;
       bool hasPlan = getPushPlanClient.call(getPushPlanService);
       if (hasPlan) {
         executePlan(getPushPlanService.response.plan);
       }
-    } else if (mode == 2 ) { // debug
+    } else if (mode == clutter_butter::SetPushExecutorState::Request::DEBUG) {  // debug
       ROS_DEBUG_STREAM("Were now in debug mode...");
     }
     // keep alive
@@ -141,18 +145,37 @@ bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clut
 }
 
 void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
+  // double check this is not already jailed
+  if (plan.jailed) {
+    ROS_WARN_STREAM("Plan for target with id: " << plan.target.id << " already in jail, skipping!");
+    return;
+  }
+
   ROS_INFO_STREAM("Executing plan for target with id: " << plan.target.id << "...");
+  ROS_INFO_STREAM("MOVING TO START...");
   // go to start position, avoiding obstacles along the way
   goTo(plan.start.position, quaternionToZAngle(plan.start.orientation));
+
+  ROS_INFO_STREAM("STARTING PUSH...");
   // push target keeping track of centroid, and sending this to target update service
   goTo(plan.goal.position, quaternionToZAngle(plan.goal.orientation));
   // if off track, abandon this plan and request a new one
+
+  // tell the planner this one is done
+  clutter_butter::UpdateTarget updateTargetService;
+  updateTargetService.request.target.id = plan.target.id;
+  updateTargetService.request.action = clutter_butter::UpdateTarget::Request::JAILED;
+  updateTargetClient.call(updateTargetService);
+
+  ROS_INFO_STREAM("DONE PUSHING");
+  mode = clutter_butter::SetPushExecutorState::Request::READY;
 }
 
 bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   ROS_INFO_STREAM("Attempting to move to (" << goal.x << ", " << goal.y << "), angle: " << desiredAngle);
   geometry_msgs::Pose location = getOdom();
-  ROS_INFO_STREAM("Current position (" << location.position.x << ", " << location.position.y << "), angle: " << quaternionToZAngle(location.orientation));
+  ROS_INFO_STREAM(
+      "Current position (" << location.position.x << ", " << location.position.y << "), angle: " << quaternionToZAngle(location.orientation));
 
   // what is the angle difference between where we are now and where we want to go?
   double angleToGoal = angleDifference(location.position, goal);
@@ -164,9 +187,9 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   setOrientation(angleToGoal);
   ROS_DEBUG_STREAM("Oriented toward goal...");
   int count = 1;
-  while(distance > 0.1) {
-    ROS_DEBUG_STREAM("forward iteration : " << count << " distance traveling: " << (distance/2) );
-    forward(distance/2);
+  while (distance > 0.1) {
+    ROS_DEBUG_STREAM("forward iteration : " << count << " distance traveling: " << (distance/2));
+    forward(distance / 2);
     stop();
     // re adjust
     location = getOdom();
@@ -205,13 +228,13 @@ void PushExecutor::setOrientation(double desiredAngle) {
   while (fabs(delta) > 0.25 && rotated) {
     ROS_DEBUG_STREAM("Angle delta: " << delta << " degrees");
     if (fabs(delta) > 20) {
-      rotated = rotateNDegrees(delta/2, 20);
-    // slow down a little
+      rotated = rotateNDegrees(delta / 2, 20);
+      // slow down a little
     } else if (fabs(delta) < 20 && fabs(delta) > 5) {
-      rotated = rotateNDegrees(delta/2, 5);
-    // slow down a lot
+      rotated = rotateNDegrees(delta / 2, 5);
+      // slow down a lot
     } else {
-      rotated = rotateNDegrees(delta/2, 1);
+      rotated = rotateNDegrees(delta / 2, 1);
     }
     // if can't rotate, break
     currentAngle = quaternionToZAngle(getOdom().orientation);
@@ -244,7 +267,7 @@ bool PushExecutor::rotateNDegrees(double angle, double speed) {
 
   double current_angle = 0;
   int t0 = ros::Time::now().sec;
-  ROS_INFO_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
+  ROS_DEBUG_STREAM("Current Angle: " << current_angle << " relative: " << relative_angle);
 
   while (fabs(current_angle - relative_angle) > 0.00872665) {
     velocityPub.publish(vel);

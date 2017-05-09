@@ -56,13 +56,22 @@ bool too_close(std::vector<float> ranges, float min_dist) {
   // store min we have seen
   float min = 1000000.0;
   // calculate average and keep track of current min
+  double counted = 0.0;
   for (float val : ranges) {
     if (val < min) {
       min = val;
     }
+    if (isnan(val)) {
+      continue;
+    }
     total += val;
+    counted += 1;
   }
-  double avg = total / ranges.size();
+  double avg = total / counted;
+  if (isnan(avg)) {
+    avg = 0.0;
+  }
+  ROS_INFO_STREAM("min: " << min << ", avg: " << avg);
   // avg is less than min or min seen is half that
   return avg < min_dist || min < (min_dist/2);
 }
@@ -71,6 +80,7 @@ bool too_close(std::vector<float> ranges, float min_dist) {
 ObstacleDetector::ObstacleDetector(ros::NodeHandle nh) {
   n = nh;
   pub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
+  ros::Subscriber sub = n.subscribe("scan", 1000, &ObstacleDetector::process_scan, this);
   setStateService = n.advertiseService("set_obstacle_detector_state", &ObstacleDetector::setState, this);
   ros::spin();
 }
@@ -82,12 +92,14 @@ ObstacleDetector::~ObstacleDetector() {
 bool ObstacleDetector::setState(clutter_butter::SetObstacleDetectorStateRequest &req,
               clutter_butter::SetObstacleDetectorStateResponse &resp) {
   enabled = (req.state == clutter_butter::SetObstacleDetectorState::Request::ACTIVE);
+  ROS_INFO_STREAM("Detection Active: " << enabled);
   return true;
 }
 
 void ObstacleDetector::process_scan(const sensor_msgs::LaserScan::ConstPtr& scan) {
+
   if (enabled && too_close(scan->ranges, MINDIST)) {
-    ROS_DEBUG_STREAM("found an obstacle stopping and redirecting...");
+    ROS_INFO_STREAM("found an obstacle stopping and redirecting...");
     stop();
     rotate_n_degrees(5);
     stop();

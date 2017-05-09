@@ -80,6 +80,15 @@ void setOrientationFromAngle(geometry_msgs::Quaternion &q, double zDegrees) {
   q.y = t0 * t2 * t5 + t1 * t3 * t4;
 }
 
+geometry_msgs::Point shiftX(geometry_msgs::Point toShift, double amount) {
+  toShift.x += amount;
+  return toShift;
+}
+geometry_msgs::Point shiftY(geometry_msgs::Point toShift, double amount) {
+  toShift.y -= amount;
+  return toShift;
+}
+
 PushExecutor::PushExecutor(ros::NodeHandle nh) {
   n = nh;
   // Register our services with the master.
@@ -152,7 +161,28 @@ void PushExecutor::executePlan(clutter_butter::PushPlan plan) {
 
   ROS_INFO_STREAM("Executing plan for target with id: " << plan.target.id << "...");
   ROS_INFO_STREAM("MOVING TO START...");
-  // go to start position, avoiding obstacles along the way
+
+  // is the target of the plan in the way?
+  geometry_msgs::Pose location = getOdom();
+  double startDistance = calculateDistance(location.position, plan.start.position);
+  double targetDistance = calculateDistance(location.position, plan.target.centroid);
+
+  if (startDistance > targetDistance) {
+    ROS_INFO_STREAM("Executing box move to get around target...");
+    // do some fancy foot work, try to go around in a box like move
+    // are we to the left or right of the target
+    bool leftOf = (location.position.x <= plan.target.centroid.x);
+    bool below = (location.position.y <= plan.target.centroid.y);
+    double angle = (below) ? 90 : 270;
+    if (leftOf) {
+      geometry_msgs::Point offset = shiftX(plan.start.position, -0.5);
+      goTo(offset, angle);
+    } else {
+      geometry_msgs::Point offset = shiftX(plan.start.position, 0.5);
+      goTo(offset, angle);
+    }
+  }
+  // go to start position
   goTo(plan.start.position, quaternionToZAngle(plan.start.orientation));
 
   ROS_INFO_STREAM("STARTING PUSH...");

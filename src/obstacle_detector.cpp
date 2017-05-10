@@ -97,7 +97,6 @@ bool ObstacleDetector::setState(clutter_butter::SetObstacleDetectorStateRequest 
 }
 
 void ObstacleDetector::process_scan(const sensor_msgs::LaserScan::ConstPtr& scan) {
-
   if (enabled && too_close(scan->ranges, MINDIST)) {
     ROS_INFO_STREAM("found an obstacle stopping and redirecting...");
     stop();

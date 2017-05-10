@@ -31,6 +31,7 @@
 #include <ros/service_client.h>
 #include <gtest/gtest.h>
 #include <math.h>
+#include <memory>
 #include <geometry_msgs/Point.h>
 #include "clutter_butter/Target.h"
 #include "clutter_butter/NewTarget.h"
@@ -60,7 +61,6 @@ class ServiceTest : public ::testing::Test {
   std::shared_ptr<ros::NodeHandle> n;
   ros::ServiceClient addNewTargetClient;
   ros::ServiceClient getPushPlanClient;
-
 };
 }
 
@@ -178,7 +178,8 @@ TEST_F(ServiceTest, closerTargetPlanReturnedFirst1) {
   clutter_butter::GetPushPlan getPushPlanService;
   bool hasPlan = getPushPlanClient.call(getPushPlanService);
   EXPECT_TRUE(hasPlan);
-  EXPECT_EQ(id2, getPushPlanService.response.plan.target.id) << "Expected closer target to have plan created but was not!";
+  EXPECT_EQ(id2, getPushPlanService.response.plan.target.id)
+    << "Expected closer target to have plan created but was not!";
 }
 
 TEST_F(ServiceTest, closerTargetPlanReturnedFirst2) {
@@ -202,7 +203,8 @@ TEST_F(ServiceTest, closerTargetPlanReturnedFirst2) {
   clutter_butter::GetPushPlan getPushPlanService;
   bool hasPlan = getPushPlanClient.call(getPushPlanService);
   EXPECT_TRUE(hasPlan);
-  EXPECT_EQ(id1, getPushPlanService.response.plan.target.id) << "Expected closer target to have plan created but was not!";
+  EXPECT_EQ(id1, getPushPlanService.response.plan.target.id)
+    << "Expected closer target to have plan created but was not!";
 }
 
 TEST_F(ServiceTest, pushOrientationCorrectAlignedX) {

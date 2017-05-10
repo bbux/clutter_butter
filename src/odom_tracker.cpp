@@ -30,7 +30,6 @@
 #include "ros/ros.h"
 #include "odom_tracker.h"
 
-
 double quaternionToZAngle(const geometry_msgs::Quaternion &q) {
   double ysqr = q.y * q.y;
 
@@ -69,7 +68,8 @@ bool OdomTracker::getOdom(clutter_butter::GetOdom::Request &req, clutter_butter:
   return true;
 }
 
-bool OdomTracker::getOdomPretty(clutter_butter::GetOdomPretty::Request &req, clutter_butter::GetOdomPretty::Response &resp) {
+bool OdomTracker::getOdomPretty(clutter_butter::GetOdomPretty::Request &req,
+                                clutter_butter::GetOdomPretty::Response &resp) {
   resp.point = location.position;
   resp.angleDegrees = quaternionToZAngle(location.orientation);
   return true;

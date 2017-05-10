@@ -113,7 +113,7 @@ void PushExecutor::spin() {
   ros::Rate loop_rate(10);
 
   while (ros::ok()) {
-    // any plans to execute
+    // any plans to execute ?
     if (mode == clutter_butter::SetPushExecutorState::Request::READY) {
       mode = clutter_butter::SetPushExecutorState::Request::PUSHING;
       ROS_INFO_STREAM("Were active, time to push stuff...");
@@ -204,7 +204,8 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
   ROS_INFO_STREAM("Attempting to move to (" << goal.x << ", " << goal.y << "), angle: " << desiredAngle);
   geometry_msgs::Pose location = getOdom();
   ROS_INFO_STREAM(
-      "Current position (" << location.position.x << ", " << location.position.y << "), angle: " << quaternionToZAngle(location.orientation));
+      "Current position (" << location.position.x << ", " << location.position.y << "), angle: "
+      << quaternionToZAngle(location.orientation));
 
   // what is the angle difference between where we are now and where we want to go?
   double angleToGoal = angleDifference(location.position, goal);
@@ -223,8 +224,6 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
     // re adjust
     location = getOdom();
     distance = calculateDistance(location.position, goal);
-    //angleToGoal = angleDifference(location.position, goal);
-    //setOrientation(angleToGoal);
 
     ROS_DEBUG_STREAM("Current distance: " << distance);
     count++;
@@ -233,7 +232,7 @@ bool PushExecutor::goTo(geometry_msgs::Point goal, double desiredAngle) {
       return distance;
     }
   }
-  ROS_DEBUG_STREAM("We made it to the goal! Setting orientation to: " << desiredAngle);
+  ROS_INFO_STREAM("We made it to the goal! Setting orientation to: " << desiredAngle);
   setOrientation(desiredAngle);
 
   location = getOdom();
@@ -274,7 +273,6 @@ void PushExecutor::setOrientation(double desiredAngle) {
   }
 
   ROS_DEBUG_STREAM("Final angle " << currentAngle << " degrees");
-
 }
 
 bool PushExecutor::rotateNDegrees(double angle, double speed) {

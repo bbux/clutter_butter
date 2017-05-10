@@ -55,7 +55,7 @@ class PushExecutorTest : public ::testing::Test {
   std::shared_ptr<ros::NodeHandle> n;
   ros::ServiceClient setStateClient;
 };
-} // namespace
+}  // namespace
 
 
 TEST_F(PushExecutorTest, servicesExist) {

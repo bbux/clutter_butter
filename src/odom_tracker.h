@@ -38,7 +38,7 @@
 #include "clutter_butter/GetOdomPretty.h"
 
 /**
- * Class for executing PushPlans
+ * Class for tracking odometry and serving it up through a service
  */
 class OdomTracker {
  private:

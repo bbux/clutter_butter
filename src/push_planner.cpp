@@ -82,7 +82,8 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
   // is it already in jail?
   double dist = distance(req.centroid, jail);
   if (dist < minimumDistance) {
-    ROS_WARN_STREAM("Target at (" << req.centroid.x << ", " << req.centroid.y << ") " << dist << " from jail, min dist is " << minimumDistance);
+    ROS_WARN_STREAM("Target at (" << req.centroid.x << ", " << req.centroid.y << ") "
+                    << dist << " from jail, min dist is " << minimumDistance);
     return false;
   }
   // is it already known?
@@ -101,8 +102,7 @@ bool PushPlanner::addTarget(clutter_butter::NewTargetRequest &req, clutter_butte
 
 bool PushPlanner::updateTarget(clutter_butter::UpdateTargetRequest &req, clutter_butter::UpdateTargetResponse &resp) {
   if (req.action == clutter_butter::UpdateTarget::Request::JAILED) {
-    for (std::vector<clutter_butter::PushPlan>::iterator it = plans.begin(); it != plans.end(); ++it)
-    {
+    for (std::vector<clutter_butter::PushPlan>::iterator it = plans.begin(); it != plans.end(); ++it) {
       clutter_butter::PushPlan &plan = *it;
       if (plan.target.id == req.target.id) {
         ROS_INFO_STREAM("Setting Target with ID: " << plan.target.id << " To JAILED");
@@ -112,7 +112,7 @@ bool PushPlanner::updateTarget(clutter_butter::UpdateTargetRequest &req, clutter
     }
   } else {
     // they moved it
-    // TODO: figure this out
+    // TODO(bbuxton): figure this out
   }
   return true;
 }

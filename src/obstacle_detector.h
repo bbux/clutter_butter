@@ -1,7 +1,7 @@
 /**
  * @file
  * @author Brian Buxton <bbux10@gmail.com>
- * @brief walker node header definitions
+ * @brief obstacle detector node header definitions
  * @copyright BSD License
  * Copyright (c) 2017 Brian Buxton
  * All rights reserved.
@@ -36,7 +36,7 @@
 #include "clutter_butter/SetObstacleDetectorState.h"
 
 /**
- * Class for doing a random walk with obstacle avoidance
+ * Class for performing obstacle avoidance
  */
 class ObstacleDetector {
  private:
@@ -64,7 +64,7 @@ class ObstacleDetector {
 
  public:
   /**
-   * Construct and initialize the walker node
+   * Construct and initialize the node
    * @param nh the valid node handle for this node
    */
   explicit ObstacleDetector(ros::NodeHandle nh);
@@ -78,10 +78,10 @@ class ObstacleDetector {
    */
   virtual ~ObstacleDetector();
   /**
-   * Service for setting the push executor state
+   * Service for setting the obstacle detector state
    */
-  bool setState(clutter_butter::SetObstacleDetectorStateRequest &req, clutter_butter::SetObstacleDetectorStateResponse &resp);
-
+  bool setState(clutter_butter::SetObstacleDetectorStateRequest &req,
+                clutter_butter::SetObstacleDetectorStateResponse &resp);
 };
 
 #endif  // SRC_OBSTACLE_DETECTOR_H_

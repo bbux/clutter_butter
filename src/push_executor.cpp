@@ -141,13 +141,14 @@ bool PushExecutor::setState(clutter_butter::SetPushExecutorStateRequest &req,
 }
 
 bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_butter::GoToResponse &resp) {
-  ROS_INFO_STREAM("Go To Request: " << req);
+  ROS_INFO_STREAM("Go To Request: (" << req.goal.x << ", " << req.goal.y << ")");
   int distance = goTo(req.goal, req.angleDegrees);
   resp.distance = distance;
   return (distance > 0);
 }
 
-bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {
+bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {(void)req; // Suppress unused warning
+  (void)resp; // Suppress unused warning
   setOrientation(req.angleDegrees);
   return true;
 }

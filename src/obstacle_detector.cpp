@@ -91,6 +91,7 @@ ObstacleDetector::~ObstacleDetector() {
 
 bool ObstacleDetector::setState(clutter_butter::SetObstacleDetectorStateRequest &req,
               clutter_butter::SetObstacleDetectorStateResponse &resp) {
+  (void)resp; // Suppress unused warning
   enabled = (req.state == clutter_butter::SetObstacleDetectorState::Request::ACTIVE);
   ROS_INFO_STREAM("Detection Active: " << enabled);
   return true;

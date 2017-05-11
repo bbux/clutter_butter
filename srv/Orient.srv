@@ -1,6 +1,2 @@
 float64 angleDegrees
 ---
-uint8 FAILED=0
-uint8 MADEIT=1
-
-uint8 status

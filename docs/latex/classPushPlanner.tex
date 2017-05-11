@@ -1,0 +1,97 @@
+\hypertarget{classPushPlanner}{\section{Push\-Planner Class Reference}
+\label{classPushPlanner}\index{Push\-Planner@{Push\-Planner}}
+}
+
+
+{\ttfamily \#include $<$push\-\_\-planner.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPushPlanner_ac1b2ae2c44fd03a47fc04a88a3e4556d}{Push\-Planner} (ros\-::\-Node\-Handle nh)
+\item 
+virtual \hyperlink{classPushPlanner_ab34cd4e65db16ba204df5ef38b8b3403}{$\sim$\-Push\-Planner} ()
+\item 
+void \hyperlink{classPushPlanner_a5c65ed5672f0c0abef8f7db8db50863a}{spin} ()
+\item 
+bool \hyperlink{classPushPlanner_a04c24433673836daac0a8d92a3ddd1c3}{add\-Target} (clutter\-\_\-butter\-::\-New\-Target\-Request \&req, clutter\-\_\-butter\-::\-New\-Target\-Response \&resp)
+\item 
+bool \hyperlink{classPushPlanner_a537bc4f0e7a8a818d0c7f5c880a379e5}{update\-Target} (clutter\-\_\-butter\-::\-Update\-Target\-Request \&req, clutter\-\_\-butter\-::\-Update\-Target\-Response \&resp)
+\item 
+bool \hyperlink{classPushPlanner_a4aaf964fb54cb4ed4df10f649460f6cb}{get\-Push\-Plan} (clutter\-\_\-butter\-::\-Get\-Push\-Plan\-Request \&req, clutter\-\_\-butter\-::\-Get\-Push\-Plan\-Response \&resp)
+\item 
+bool \hyperlink{classPushPlanner_afeb2cc601af98a7e29ecdefdfe9b3b12}{clear\-All} (clutter\-\_\-butter\-::\-Clear\-All\-Request \&req, clutter\-\_\-butter\-::\-Clear\-All\-Response \&resp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for creating push plans for Targets to push them to the coordinates of the configured jail 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classPushPlanner_ac1b2ae2c44fd03a47fc04a88a3e4556d}{\index{Push\-Planner@{Push\-Planner}!Push\-Planner@{Push\-Planner}}
+\index{Push\-Planner@{Push\-Planner}!PushPlanner@{Push\-Planner}}
+\subsubsection[{Push\-Planner}]{\setlength{\rightskip}{0pt plus 5cm}Push\-Planner\-::\-Push\-Planner (
+\begin{DoxyParamCaption}
+\item[{ros\-::\-Node\-Handle}]{nh}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [explicit]}}}\label{classPushPlanner_ac1b2ae2c44fd03a47fc04a88a3e4556d}
+Construct and initialize the push\-\_\-planner node 
+\begin{DoxyParams}{Parameters}
+{\em nh} & the valid node handle for this node \\
+\hline
+\end{DoxyParams}
+\hypertarget{classPushPlanner_ab34cd4e65db16ba204df5ef38b8b3403}{\index{Push\-Planner@{Push\-Planner}!$\sim$\-Push\-Planner@{$\sim$\-Push\-Planner}}
+\index{$\sim$\-Push\-Planner@{$\sim$\-Push\-Planner}!PushPlanner@{Push\-Planner}}
+\subsubsection[{$\sim$\-Push\-Planner}]{\setlength{\rightskip}{0pt plus 5cm}Push\-Planner\-::$\sim$\-Push\-Planner (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classPushPlanner_ab34cd4e65db16ba204df5ef38b8b3403}
+Destructor 
+
+\subsection{Member Function Documentation}
+\hypertarget{classPushPlanner_a04c24433673836daac0a8d92a3ddd1c3}{\index{Push\-Planner@{Push\-Planner}!add\-Target@{add\-Target}}
+\index{add\-Target@{add\-Target}!PushPlanner@{Push\-Planner}}
+\subsubsection[{add\-Target}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Planner\-::add\-Target (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-New\-Target\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-New\-Target\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushPlanner_a04c24433673836daac0a8d92a3ddd1c3}
+Service for adding a new target \hypertarget{classPushPlanner_afeb2cc601af98a7e29ecdefdfe9b3b12}{\index{Push\-Planner@{Push\-Planner}!clear\-All@{clear\-All}}
+\index{clear\-All@{clear\-All}!PushPlanner@{Push\-Planner}}
+\subsubsection[{clear\-All}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Planner\-::clear\-All (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Clear\-All\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Clear\-All\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushPlanner_afeb2cc601af98a7e29ecdefdfe9b3b12}
+Service for clearing all targets and plans \hypertarget{classPushPlanner_a4aaf964fb54cb4ed4df10f649460f6cb}{\index{Push\-Planner@{Push\-Planner}!get\-Push\-Plan@{get\-Push\-Plan}}
+\index{get\-Push\-Plan@{get\-Push\-Plan}!PushPlanner@{Push\-Planner}}
+\subsubsection[{get\-Push\-Plan}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Planner\-::get\-Push\-Plan (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Get\-Push\-Plan\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Get\-Push\-Plan\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushPlanner_a4aaf964fb54cb4ed4df10f649460f6cb}
+Service for getting a push plan, if any are available \hypertarget{classPushPlanner_a5c65ed5672f0c0abef8f7db8db50863a}{\index{Push\-Planner@{Push\-Planner}!spin@{spin}}
+\index{spin@{spin}!PushPlanner@{Push\-Planner}}
+\subsubsection[{spin}]{\setlength{\rightskip}{0pt plus 5cm}void Push\-Planner\-::spin (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classPushPlanner_a5c65ed5672f0c0abef8f7db8db50863a}
+Starts the node loop to listen for new targets to create plans for \hypertarget{classPushPlanner_a537bc4f0e7a8a818d0c7f5c880a379e5}{\index{Push\-Planner@{Push\-Planner}!update\-Target@{update\-Target}}
+\index{update\-Target@{update\-Target}!PushPlanner@{Push\-Planner}}
+\subsubsection[{update\-Target}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Planner\-::update\-Target (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Update\-Target\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Update\-Target\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushPlanner_a537bc4f0e7a8a818d0c7f5c880a379e5}
+Service for updating an existing target 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{push__planner_8h}{push\-\_\-planner.\-h}\item 
+src/\hyperlink{push__planner_8cpp}{push\-\_\-planner.\-cpp}\end{DoxyCompactItemize}

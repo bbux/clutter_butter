@@ -1,0 +1,67 @@
+\hypertarget{classObstacleDetector}{\section{Obstacle\-Detector Class Reference}
+\label{classObstacleDetector}\index{Obstacle\-Detector@{Obstacle\-Detector}}
+}
+
+
+{\ttfamily \#include $<$obstacle\-\_\-detector.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classObstacleDetector_a15db5b43cb18f49d392ea7c9d22b182d}{Obstacle\-Detector} (ros\-::\-Node\-Handle nh)
+\item 
+void \hyperlink{classObstacleDetector_abeeaf5eaf14c31307a73748aedaf957a}{spin} ()
+\item 
+virtual \hyperlink{classObstacleDetector_aa3b42649fc5c973f677a4aba968d25cc}{$\sim$\-Obstacle\-Detector} ()
+\item 
+bool \hyperlink{classObstacleDetector_a8b178b3e7005d5f9d5c593f210354d80}{set\-State} (clutter\-\_\-butter\-::\-Set\-Obstacle\-Detector\-State\-Request \&req, clutter\-\_\-butter\-::\-Set\-Obstacle\-Detector\-State\-Response \&resp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for performing obstacle avoidance 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classObstacleDetector_a15db5b43cb18f49d392ea7c9d22b182d}{\index{Obstacle\-Detector@{Obstacle\-Detector}!Obstacle\-Detector@{Obstacle\-Detector}}
+\index{Obstacle\-Detector@{Obstacle\-Detector}!ObstacleDetector@{Obstacle\-Detector}}
+\subsubsection[{Obstacle\-Detector}]{\setlength{\rightskip}{0pt plus 5cm}Obstacle\-Detector\-::\-Obstacle\-Detector (
+\begin{DoxyParamCaption}
+\item[{ros\-::\-Node\-Handle}]{nh}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [explicit]}}}\label{classObstacleDetector_a15db5b43cb18f49d392ea7c9d22b182d}
+Construct and initialize the node 
+\begin{DoxyParams}{Parameters}
+{\em nh} & the valid node handle for this node \\
+\hline
+\end{DoxyParams}
+\hypertarget{classObstacleDetector_aa3b42649fc5c973f677a4aba968d25cc}{\index{Obstacle\-Detector@{Obstacle\-Detector}!$\sim$\-Obstacle\-Detector@{$\sim$\-Obstacle\-Detector}}
+\index{$\sim$\-Obstacle\-Detector@{$\sim$\-Obstacle\-Detector}!ObstacleDetector@{Obstacle\-Detector}}
+\subsubsection[{$\sim$\-Obstacle\-Detector}]{\setlength{\rightskip}{0pt plus 5cm}Obstacle\-Detector\-::$\sim$\-Obstacle\-Detector (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classObstacleDetector_aa3b42649fc5c973f677a4aba968d25cc}
+Destructor 
+
+\subsection{Member Function Documentation}
+\hypertarget{classObstacleDetector_a8b178b3e7005d5f9d5c593f210354d80}{\index{Obstacle\-Detector@{Obstacle\-Detector}!set\-State@{set\-State}}
+\index{set\-State@{set\-State}!ObstacleDetector@{Obstacle\-Detector}}
+\subsubsection[{set\-State}]{\setlength{\rightskip}{0pt plus 5cm}bool Obstacle\-Detector\-::set\-State (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Set\-Obstacle\-Detector\-State\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Set\-Obstacle\-Detector\-State\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classObstacleDetector_a8b178b3e7005d5f9d5c593f210354d80}
+Service for setting the obstacle detector state \hypertarget{classObstacleDetector_abeeaf5eaf14c31307a73748aedaf957a}{\index{Obstacle\-Detector@{Obstacle\-Detector}!spin@{spin}}
+\index{spin@{spin}!ObstacleDetector@{Obstacle\-Detector}}
+\subsubsection[{spin}]{\setlength{\rightskip}{0pt plus 5cm}void Obstacle\-Detector\-::spin (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classObstacleDetector_abeeaf5eaf14c31307a73748aedaf957a}
+Starts the node loop to listen for laser scan data and to send updated velocity commands to perform the obstacle avoidance 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{obstacle__detector_8h}{obstacle\-\_\-detector.\-h}\item 
+src/\hyperlink{obstacle__detector_8cpp}{obstacle\-\_\-detector.\-cpp}\end{DoxyCompactItemize}

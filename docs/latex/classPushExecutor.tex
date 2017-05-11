@@ -1,0 +1,87 @@
+\hypertarget{classPushExecutor}{\section{Push\-Executor Class Reference}
+\label{classPushExecutor}\index{Push\-Executor@{Push\-Executor}}
+}
+
+
+{\ttfamily \#include $<$push\-\_\-executor.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPushExecutor_a8581db529bb129db624246b03ef1dd76}{Push\-Executor} (ros\-::\-Node\-Handle nh)
+\item 
+virtual \hyperlink{classPushExecutor_ae06e824bc0a5c5d1aa2852e0a4f0315f}{$\sim$\-Push\-Executor} ()
+\item 
+void \hyperlink{classPushExecutor_a2ed28d59825052dba2a89069710a1f1b}{spin} ()
+\item 
+bool \hyperlink{classPushExecutor_a29f3471ee5383b19d1c6184db62de64a}{set\-State} (clutter\-\_\-butter\-::\-Set\-Push\-Executor\-State\-Request \&req, clutter\-\_\-butter\-::\-Set\-Push\-Executor\-State\-Response \&resp)
+\item 
+bool \hyperlink{classPushExecutor_adefbc98c68687a515825d70d6c2a401d}{go\-To\-Service\-Handler} (clutter\-\_\-butter\-::\-Go\-To\-Request \&req, clutter\-\_\-butter\-::\-Go\-To\-Response \&resp)
+\item 
+bool \hyperlink{classPushExecutor_ace047e15af6c8ac75ffeb9f1e4d27f56}{orient\-Service\-Handler} (clutter\-\_\-butter\-::\-Orient\-Request \&req, clutter\-\_\-butter\-::\-Orient\-Response \&resp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for executing Push\-Plans 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classPushExecutor_a8581db529bb129db624246b03ef1dd76}{\index{Push\-Executor@{Push\-Executor}!Push\-Executor@{Push\-Executor}}
+\index{Push\-Executor@{Push\-Executor}!PushExecutor@{Push\-Executor}}
+\subsubsection[{Push\-Executor}]{\setlength{\rightskip}{0pt plus 5cm}Push\-Executor\-::\-Push\-Executor (
+\begin{DoxyParamCaption}
+\item[{ros\-::\-Node\-Handle}]{nh}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [explicit]}}}\label{classPushExecutor_a8581db529bb129db624246b03ef1dd76}
+Construct and initialize the push\-\_\-planner node 
+\begin{DoxyParams}{Parameters}
+{\em nh} & the valid node handle for this node \\
+\hline
+\end{DoxyParams}
+\hypertarget{classPushExecutor_ae06e824bc0a5c5d1aa2852e0a4f0315f}{\index{Push\-Executor@{Push\-Executor}!$\sim$\-Push\-Executor@{$\sim$\-Push\-Executor}}
+\index{$\sim$\-Push\-Executor@{$\sim$\-Push\-Executor}!PushExecutor@{Push\-Executor}}
+\subsubsection[{$\sim$\-Push\-Executor}]{\setlength{\rightskip}{0pt plus 5cm}Push\-Executor\-::$\sim$\-Push\-Executor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classPushExecutor_ae06e824bc0a5c5d1aa2852e0a4f0315f}
+Destructor 
+
+\subsection{Member Function Documentation}
+\hypertarget{classPushExecutor_adefbc98c68687a515825d70d6c2a401d}{\index{Push\-Executor@{Push\-Executor}!go\-To\-Service\-Handler@{go\-To\-Service\-Handler}}
+\index{go\-To\-Service\-Handler@{go\-To\-Service\-Handler}!PushExecutor@{Push\-Executor}}
+\subsubsection[{go\-To\-Service\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Executor\-::go\-To\-Service\-Handler (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Go\-To\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Go\-To\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushExecutor_adefbc98c68687a515825d70d6c2a401d}
+Service for go to service (debug mode only) \hypertarget{classPushExecutor_ace047e15af6c8ac75ffeb9f1e4d27f56}{\index{Push\-Executor@{Push\-Executor}!orient\-Service\-Handler@{orient\-Service\-Handler}}
+\index{orient\-Service\-Handler@{orient\-Service\-Handler}!PushExecutor@{Push\-Executor}}
+\subsubsection[{orient\-Service\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Executor\-::orient\-Service\-Handler (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Orient\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Orient\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushExecutor_ace047e15af6c8ac75ffeb9f1e4d27f56}
+Service for orient service (debug mode only) \hypertarget{classPushExecutor_a29f3471ee5383b19d1c6184db62de64a}{\index{Push\-Executor@{Push\-Executor}!set\-State@{set\-State}}
+\index{set\-State@{set\-State}!PushExecutor@{Push\-Executor}}
+\subsubsection[{set\-State}]{\setlength{\rightskip}{0pt plus 5cm}bool Push\-Executor\-::set\-State (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Set\-Push\-Executor\-State\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Set\-Push\-Executor\-State\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classPushExecutor_a29f3471ee5383b19d1c6184db62de64a}
+Service for setting the push executor state \hypertarget{classPushExecutor_a2ed28d59825052dba2a89069710a1f1b}{\index{Push\-Executor@{Push\-Executor}!spin@{spin}}
+\index{spin@{spin}!PushExecutor@{Push\-Executor}}
+\subsubsection[{spin}]{\setlength{\rightskip}{0pt plus 5cm}void Push\-Executor\-::spin (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classPushExecutor_a2ed28d59825052dba2a89069710a1f1b}
+Starts the node loop to listen for activation 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{push__executor_8h}{push\-\_\-executor.\-h}\item 
+src/\hyperlink{push__executor_8cpp}{push\-\_\-executor.\-cpp}\end{DoxyCompactItemize}

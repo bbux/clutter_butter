@@ -1,0 +1,77 @@
+\hypertarget{classOdomTracker}{\section{Odom\-Tracker Class Reference}
+\label{classOdomTracker}\index{Odom\-Tracker@{Odom\-Tracker}}
+}
+
+
+{\ttfamily \#include $<$odom\-\_\-tracker.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classOdomTracker_ad1b275aaf902e8a2463d769a4a6d9705}{Odom\-Tracker} (ros\-::\-Node\-Handle nh)
+\item 
+virtual \hyperlink{classOdomTracker_abc3bf8996e98c5fd29233954e9ce7ac6}{$\sim$\-Odom\-Tracker} ()
+\item 
+void \hyperlink{classOdomTracker_adba788d1a5ad15bc5ae3b309bd53e541}{spin} ()
+\item 
+bool \hyperlink{classOdomTracker_ac803fe8018fecf90c74b039063b6b24d}{get\-Odom} (clutter\-\_\-butter\-::\-Get\-Odom\-::\-Request \&req, clutter\-\_\-butter\-::\-Get\-Odom\-::\-Response \&resp)
+\item 
+bool \hyperlink{classOdomTracker_a2cbe969abca25bc1eef0ee2deb8953de}{get\-Odom\-Pretty} (clutter\-\_\-butter\-::\-Get\-Odom\-Pretty\-::\-Request \&req, clutter\-\_\-butter\-::\-Get\-Odom\-Pretty\-::\-Response \&resp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for tracking odometry and serving it up through a service 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classOdomTracker_ad1b275aaf902e8a2463d769a4a6d9705}{\index{Odom\-Tracker@{Odom\-Tracker}!Odom\-Tracker@{Odom\-Tracker}}
+\index{Odom\-Tracker@{Odom\-Tracker}!OdomTracker@{Odom\-Tracker}}
+\subsubsection[{Odom\-Tracker}]{\setlength{\rightskip}{0pt plus 5cm}Odom\-Tracker\-::\-Odom\-Tracker (
+\begin{DoxyParamCaption}
+\item[{ros\-::\-Node\-Handle}]{nh}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [explicit]}}}\label{classOdomTracker_ad1b275aaf902e8a2463d769a4a6d9705}
+Construct and initialize 
+\begin{DoxyParams}{Parameters}
+{\em nh} & the valid node handle for this node \\
+\hline
+\end{DoxyParams}
+\hypertarget{classOdomTracker_abc3bf8996e98c5fd29233954e9ce7ac6}{\index{Odom\-Tracker@{Odom\-Tracker}!$\sim$\-Odom\-Tracker@{$\sim$\-Odom\-Tracker}}
+\index{$\sim$\-Odom\-Tracker@{$\sim$\-Odom\-Tracker}!OdomTracker@{Odom\-Tracker}}
+\subsubsection[{$\sim$\-Odom\-Tracker}]{\setlength{\rightskip}{0pt plus 5cm}Odom\-Tracker\-::$\sim$\-Odom\-Tracker (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classOdomTracker_abc3bf8996e98c5fd29233954e9ce7ac6}
+Destructor 
+
+\subsection{Member Function Documentation}
+\hypertarget{classOdomTracker_ac803fe8018fecf90c74b039063b6b24d}{\index{Odom\-Tracker@{Odom\-Tracker}!get\-Odom@{get\-Odom}}
+\index{get\-Odom@{get\-Odom}!OdomTracker@{Odom\-Tracker}}
+\subsubsection[{get\-Odom}]{\setlength{\rightskip}{0pt plus 5cm}bool Odom\-Tracker\-::get\-Odom (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Get\-Odom\-::\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Get\-Odom\-::\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classOdomTracker_ac803fe8018fecf90c74b039063b6b24d}
+Service for get current odom \hypertarget{classOdomTracker_a2cbe969abca25bc1eef0ee2deb8953de}{\index{Odom\-Tracker@{Odom\-Tracker}!get\-Odom\-Pretty@{get\-Odom\-Pretty}}
+\index{get\-Odom\-Pretty@{get\-Odom\-Pretty}!OdomTracker@{Odom\-Tracker}}
+\subsubsection[{get\-Odom\-Pretty}]{\setlength{\rightskip}{0pt plus 5cm}bool Odom\-Tracker\-::get\-Odom\-Pretty (
+\begin{DoxyParamCaption}
+\item[{clutter\-\_\-butter\-::\-Get\-Odom\-Pretty\-::\-Request \&}]{req, }
+\item[{clutter\-\_\-butter\-::\-Get\-Odom\-Pretty\-::\-Response \&}]{resp}
+\end{DoxyParamCaption}
+)}}\label{classOdomTracker_a2cbe969abca25bc1eef0ee2deb8953de}
+Service for get current odom in more readable format \hypertarget{classOdomTracker_adba788d1a5ad15bc5ae3b309bd53e541}{\index{Odom\-Tracker@{Odom\-Tracker}!spin@{spin}}
+\index{spin@{spin}!OdomTracker@{Odom\-Tracker}}
+\subsubsection[{spin}]{\setlength{\rightskip}{0pt plus 5cm}void Odom\-Tracker\-::spin (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOdomTracker_adba788d1a5ad15bc5ae3b309bd53e541}
+Starts the node loop 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{odom__tracker_8h}{odom\-\_\-tracker.\-h}\item 
+src/\hyperlink{odom__tracker_8cpp}{odom\-\_\-tracker.\-cpp}\end{DoxyCompactItemize}

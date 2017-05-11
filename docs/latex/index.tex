@@ -1,0 +1,57 @@
+\href{https://travis-ci.org/bbux/clutter_butter}{\tt !\mbox{[}Build Status\mbox{]}(https\-://travis-\/ci.\-org/bbux/clutter\-\_\-butter.\-svg?branch=master)} \subsection*{\href{https://coveralls.io/github/bbux/clutter_butter?branch=master}{\tt !\mbox{[}Coverage Status\mbox{]}(https\-://coveralls.\-io/repos/github/bbux/clutter\-\_\-butter/badge.\-svg?branch=master)} }
+
+\subsection*{Overview}
+
+Final Project -\/ U\-M\-D Software Development for Robotics -\/ Spring 2017
+
+Created using S\-I\-P (\href{http://www.cs.wayne.edu/rajlich/SlidesSE/18%20example%20of%20sip.pdf}{\tt Solo Iterative Processess})
+
+\href{https://docs.google.com/spreadsheets/d/1wChuRU8l6yA1EAUHQB64F89dBjVsw7t1enh5LzcWQo4/edit#gid=1120123239}{\tt Backlog}
+
+\href{https://docs.google.com/a/terpmail.umd.edu/presentation/d/1-kTNRjpu_Ld7y-KJ0uFyO3MeERlu_CQIDL3VVJ_XrMY/edit?usp=sharing}{\tt Presentation}
+
+\subsection*{License}
+
+Licensed under the \href{https://opensource.org/licenses/MIT}{\tt M\-I\-T License}
+
+\subsection*{Building}
+
+``` \section*{into catkin workspace src/ folder}
+
+git clone \href{https://github.com/bbux/clutter_butter.git}{\tt https\-://github.\-com/bbux/clutter\-\_\-butter.\-git}
+
+\section*{from catkin workspace root}
+
+catkin\-\_\-make ```
+
+\subsection*{Demo}
+
+The main demo consists of one launch file and on shell script. The launch file loads all of the nodes needed for the demo. The shell script sends the necessary service calls to initialize the \hyperlink{classPushPlanner}{Push\-Planner} and start the Push Executor. To run the demo\-:
+
+``` \section*{this will launch gazebo, and the three core nodes}
+
+roslaunch clutter\-\_\-butter two\-\_\-toy\-\_\-world.\-launch.\-xml include\-\_\-gazebo\-:=1
+
+\section*{in a separate terminal}
+
+demo/run-\/two-\/toys.\-sh ```
+
+\subsection*{Tests}
+
+\subsubsection*{Unit Tests}
+
+To run the unit tests\-:
+
+``` catkin\-\_\-make tests \&\& catkin\-\_\-make run\-\_\-tests\-\_\-clutter\-\_\-butter ```
+
+The results should be a text visualization describing the test results.
+
+\subsection*{Doxygen Documentation}
+
+To generate the doxygen documentation from the root directory\-:
+
+``` doxygen doxygen.\-config ```
+
+This will create the documentation in the docs directory.
+
+\subsection*{T\-O\-D\-O}

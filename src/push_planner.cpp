@@ -28,7 +28,7 @@
  * DAMAGE.
  */
 #include "ros/ros.h"
-#include "push_planner.h"
+#include "clutter_butter/push_planner.h"
 #include <math.h>
 #include <exception>
 

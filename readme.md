@@ -13,6 +13,25 @@ Created using SIP ([Solo Iterative Processess](http://www.cs.wayne.edu/rajlich/S
 
 [Presentation](https://docs.google.com/a/terpmail.umd.edu/presentation/d/1-kTNRjpu_Ld7y-KJ0uFyO3MeERlu_CQIDL3VVJ_XrMY/edit?usp=sharing)
 
+This project is for a robot that can be used to assist parents in one of the most frustrating and tedious tasks known to man, teaching their children to clean up after themselves.  The example use case is a messy room full of toys.  The goal of the robot would be to identify all of the toys and to move them to a cleanup jail.  The toys would then stay in jail for a predetermined interval before being rereleased into the wild.  The robot will help to reinforce in children the need to clean up after themselves and save parents the time and energy needed to instill good discipline themselves
+. 
+### Design
+#### Nodes
+MapWalker – Traverses the map identifying Targets that need to be moved to the jail. Sends Target Centroids to PushPlanner addTarget service.  Stays in run mode until whole map has been traversed and all Targets identified.  Then it goes into idle state releases control to the PushExecutor node.
+
+PushPlanner – Initialized with coordinates of Jail.  Receives Targets centroids and calculates path plans to push them to the jail.  Offers services for adding Targets, updating Targets (used during pushing), listing known Targets, and getting path plans. Subscribes to /target_loc topic for updating Target locations
+
+PushExecutor – Node for executing the push plans.  Stays in idle state until MapWalker node has finished identifying Targets.  Recieves push plans from the PushPlanner node.  Publishes updated Target location to /target_loc topic.  If push plan fails, requests a new or updated push plan.
+
+OdomTracker – Wraps /odom Odometry topic in a service so that it can be requested during a blocking call
+
+### Dependencies
+ * ROS Indigo
+ * navigation modules for nav messages
+ * gazebo turtlebot pakcages
+ * geometry modules for velocity publishing
+ * google teset for unit tests
+ 
 ## License
 
 Licensed under the [MIT License](https://opensource.org/licenses/MIT)
@@ -62,5 +81,12 @@ doxygen doxygen.config
 This will create the documentation in the docs directory.
 
 ## TODO
+ * Integrate with the move_base package for nav
+ * Use /camera for obstacle detection
+ * Add anti-tamper protections (tazer?)
+ * Create the MapWalker module to walk around and find targets/toys to jail
+ * Add hardware to pick up and throw toys into the jail
+ * Add object identification, so pet dog is not mistaken for a toy and pushed into the jail
+ * Add support for multi-agent clean up
 
 

@@ -28,9 +28,10 @@
  * DAMAGE.
  */
 #include "ros/ros.h"
-#include "clutter_butter/push_planner.h"
 #include <math.h>
 #include <exception>
+#include <vector>
+#include "clutter_butter/push_planner.h"
 
 PushPlanner::PushPlanner(ros::NodeHandle nh) {
   n = nh;

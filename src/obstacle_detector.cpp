@@ -28,8 +28,8 @@
  * DAMAGE.
  */
 #include "ros/ros.h"
-#include "clutter_butter/obstacle_detector.h"
 #include <vector>
+#include "clutter_butter/obstacle_detector.h"
 
 float MINDIST = 0.3;
 float INCREMENT = 0.5;

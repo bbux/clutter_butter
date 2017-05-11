@@ -28,8 +28,8 @@
  * DAMAGE.
  */
 #include "ros/ros.h"
-#include "clutter_butter/push_executor.h"
 #include <math.h>
+#include "clutter_butter/push_executor.h"
 #include "clutter_butter/SetPushExecutorState.h"
 #include "clutter_butter/SetObstacleDetectorState.h"
 #include "clutter_butter/UpdateTarget.h"

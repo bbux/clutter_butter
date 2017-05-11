@@ -11,7 +11,7 @@ Created using SIP ([Solo Iterative Processess](http://www.cs.wayne.edu/rajlich/S
 
 [Backlog](https://docs.google.com/spreadsheets/d/1wChuRU8l6yA1EAUHQB64F89dBjVsw7t1enh5LzcWQo4/edit#gid=1120123239)
 
-[Presentation] (https://docs.google.com/a/terpmail.umd.edu/presentation/d/1-kTNRjpu_Ld7y-KJ0uFyO3MeERlu_CQIDL3VVJ_XrMY/edit?usp=sharing)
+[Presentation](https://docs.google.com/a/terpmail.umd.edu/presentation/d/1-kTNRjpu_Ld7y-KJ0uFyO3MeERlu_CQIDL3VVJ_XrMY/edit?usp=sharing)
 
 ## License
 

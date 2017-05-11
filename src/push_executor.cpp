@@ -147,8 +147,9 @@ bool PushExecutor::goToServiceHandler(clutter_butter::GoToRequest &req, clutter_
   return (distance > 0);
 }
 
-bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req, clutter_butter::OrientResponse &resp) {(void)req; // Suppress unused warning
-  (void)resp; // Suppress unused warning
+bool PushExecutor::orientServiceHandler(clutter_butter::OrientRequest &req,
+                                        clutter_butter::OrientResponse &resp) {
+  (void)resp;  // Suppress unused warning
   setOrientation(req.angleDegrees);
   return true;
 }

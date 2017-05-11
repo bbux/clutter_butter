@@ -1,0 +1,17 @@
+src/push_executor.cpp:31:  Include the directory when naming .h files  [build/include] [4]
+src/push_executor.cpp:32:  Found C system header after other header. Should be: push_executor.h, c system, c++ system, other.  [build/include_order] [4]
+src/push_executor.cpp:321:  Add #include <utility> for forward  [build/include_what_you_use] [4]
+Done processing src/push_executor.cpp
+Total errors found: 3
+src/push_planner.cpp:31:  Include the directory when naming .h files  [build/include] [4]
+src/push_planner.cpp:32:  Found C system header after other header. Should be: push_planner.h, c system, c++ system, other.  [build/include_order] [4]
+src/push_planner.cpp:33:  Found C++ system header after other header. Should be: push_planner.h, c system, c++ system, other.  [build/include_order] [4]
+Done processing src/push_planner.cpp
+Total errors found: 3
+src/odom_tracker.cpp:31:  Include the directory when naming .h files  [build/include] [4]
+Done processing src/odom_tracker.cpp
+Total errors found: 1
+src/obstacle_detector.cpp:31:  Include the directory when naming .h files  [build/include] [4]
+src/obstacle_detector.cpp:32:  Found C++ system header after other header. Should be: obstacle_detector.h, c system, c++ system, other.  [build/include_order] [4]
+Done processing src/obstacle_detector.cpp
+Total errors found: 2

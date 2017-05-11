@@ -114,7 +114,7 @@ bool PushPlanner::updateTarget(clutter_butter::UpdateTargetRequest &req, clutter
     // they moved it
     // TODO(bbuxton): figure this out
   }
-  (void)resp; // Suppress unused warning
+  (void)resp;  // Suppress unused warning
   return true;
 }
 
@@ -130,7 +130,7 @@ clutter_butter::PushPlan PushPlanner::getPushPlanForTarget(int id) {
 }
 
 bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_butter::GetPushPlanResponse &resp) {
-  (void)req; // Suppress unused warning
+  (void)req;  // Suppress unused warning
   if (plans.size() > 0) {
     int id = plans.front().target.id;
     double shortestDistance = 1000000;
@@ -159,8 +159,8 @@ bool PushPlanner::getPushPlan(clutter_butter::GetPushPlanRequest &req, clutter_b
 }
 
 bool PushPlanner::clearAll(clutter_butter::ClearAllRequest &req, clutter_butter::ClearAllResponse &resp) {
-  (void)req; // Suppress unused warning
-  (void)resp; // Suppress unused warning
+  (void)req;  // Suppress unused warning
+  (void)resp;  // Suppress unused warning
   targets.clear();
   plans.clear();
   currentTargetId = 0;

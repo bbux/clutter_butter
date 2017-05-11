@@ -64,14 +64,14 @@ void OdomTracker::spin() {
 }
 
 bool OdomTracker::getOdom(clutter_butter::GetOdom::Request &req, clutter_butter::GetOdom::Response &resp) {
-  (void)req; // Suppress unused warning
+  (void)req;  // Suppress unused warning
   resp.pose = location;
   return true;
 }
 
 bool OdomTracker::getOdomPretty(clutter_butter::GetOdomPretty::Request &req,
                                 clutter_butter::GetOdomPretty::Response &resp) {
-  (void)req; // Suppress unused warning
+  (void)req;  // Suppress unused warning
   resp.point = location.position;
   resp.angleDegrees = quaternionToZAngle(location.orientation);
   return true;
